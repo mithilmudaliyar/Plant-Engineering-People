@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #1a3a52;
+  --color-primary-dark: #0f1f2e;
+  --color-accent: #d41f3d;
+  --color-accent-light: #e63a50;
+  --color-gold: #f59e0b;
+  --color-muted: #6b7280;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+/* ===== BASE ===== */
+body {
+  background: #f8fafc;
+  color: #1f2937;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* ===== SECTION LABELS ===== */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.section-label::before {
+  content: "";
+  display: inline-block;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 9999px;
+}
+
+/* ===== CARD ===== */
+.lt-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  transition: transform 300ms ease, box-shadow 300ms ease;
+}
+
+.lt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.lt-card img {
+  transition: transform 500ms ease;
+}
+
+.lt-card:hover img {
+  transform: scale(1.05);
+}
+
+/* ===== HERO OVERLAY ===== */
+.hero-overlay {
+  background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.1) 100%);
+}
+
+/* ===== SURFACE ===== */
+.surface {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
+  border-radius: 0.75rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  animation: ticker 30s linear infinite;
+}
+
+/* ===== NAV DROPDOWN ===== */
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 220px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  overflow: hidden;
+  z-index: 50;
+}
+
+/* ===== STEP INDICATOR (OTP) ===== */
+.step-active {
+  background: #1a3a52;
+  color: white;
+  border-color: #1a3a52;
+}
+
+.step-done {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.step-pending {
+  background: white;
+  color: #9ca3af;
+  border-color: #d1d5db;
+}
+
+/* ===== PROJECT SECTOR BADGES ===== */
+.sector-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 4px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid;
+  backdrop-filter: blur(4px);
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .lt-card,
+  .animate-fade-up {
+    transition: none;
+    animation: none;
+  }
+}

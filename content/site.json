@@ -1,0 +1,152 @@
+{
+  "company": {
+    "name": "Plant Engineering People Pvt. Ltd.",
+    "shortName": "PEPL",
+    "tagline": "Nuclear and Chemical Engineering Experts",
+    "founded": 1999,
+    "description": "A professionally managed engineering company dedicated to serve the Nuclear, Chemical, Energy, Oil, and Gas industries."
+  },
+  "about": {
+    "intro": "Welcome to PEPL, a professionally managed engineering company dedicated to serve the Nuclear, Chemical, Energy, Oil, and Gas industries. Our team is led by a qualified Mechanical Engineer with over thirty years of industry experience. At PEPL, we pride ourselves on having skilled and knowledgeable members drawn from reputable institutions, who bring decades of expertise in their respective fields.",
+    "evolution": "What began as a service-oriented company focused on Small and Medium Chemical industries has evolved into a multi-discipline engineering powerhouse. Over the years, we have expanded our capabilities, allowing us to transform innovative ideas into tangible realities. Our commitment to excellence drives us to continuously adapt and grow, ensuring we meet the diverse needs of our clients across various sectors.",
+    "dae": "PEPL is a highly esteemed vendor for the Department of Atomic Energy in India, specializing in all works associated with Nuclear fuel management. Our expertise encompasses equipments and services required for fuel fabrication, power generation, fuel reprocessing, and waste management activities. With a commitment to excellence and safety, we play a crucial role in supporting India's nuclear energy initiatives.",
+    "closing": "Trust PEPL for reliable and innovative solutions in nuclear fuel management as we believe in turning visions into successful projects through expert engineering solutions."
+  },
+  "services": [
+    {
+      "id": "engineering",
+      "title": "Engineering & Design",
+      "shortTitle": "Engineering",
+      "description": "Design, Detailed Engineering, Plant Layout design, P&I layout design, Structural and Supports design and drafting, Seismic qualifications, Material Selection, Third party Testing and Inspection Services and other Project Management Services."
+    },
+    {
+      "id": "fabrication",
+      "title": "Fabrication & Erection",
+      "shortTitle": "Fabrication",
+      "description": "Fabrication of Industrial Structures, Erection and Commissioning of Nuclear and Chemical Process Plants. Process piping, Water and Utilities piping in Stainless Steel, Carbon Steel and DI materials, Cross country pipeline laying works for water and compressed gases."
+    },
+    {
+      "id": "operations",
+      "title": "Operations & Support",
+      "shortTitle": "O&M",
+      "description": "Outsourcing, Facilities Management, Business Support Services, Operation and Maintenance jobs on plant or project basis, Shutdown maintenance jobs, Construction Supervision, Safety Supervisions, Inspection Services and general Manpower Services."
+    }
+  ],
+  "stats": [
+    {
+      "value": "1999",
+      "label": "Year Established"
+    },
+    {
+      "value": "209",
+      "label": "Projects Completed"
+    },
+    {
+      "value": "5000",
+      "label": "MT Steel Fabrication"
+    },
+    {
+      "value": "47",
+      "label": "Unique Equipments Manufactured"
+    }
+  ],
+  "projects": [
+    {
+      "id": "nuclear-piping",
+      "title": "Nuclear Process Piping",
+      "sector": "Nuclear",
+      "description": "Stainless steel process piping fabrication and erection for a nuclear fuel management facility.",
+      "status": "placeholder"
+    },
+    {
+      "id": "chemical-plant",
+      "title": "Chemical Process Plant Erection",
+      "sector": "Chemical",
+      "description": "Erection and commissioning support for a chemical process plant in the Tarapur industrial belt.",
+      "status": "placeholder"
+    },
+    {
+      "id": "utility-pipeline",
+      "title": "Cross-Country Utility Pipeline",
+      "sector": "Oil & Gas",
+      "description": "Cross country pipeline laying works for water and compressed gases.",
+      "status": "placeholder"
+    },
+    {
+      "id": "structural-fab",
+      "title": "Industrial Structural Fabrication",
+      "sector": "Industrial",
+      "description": "Fabrication of industrial structures and supports for a large-scale manufacturing facility.",
+      "status": "placeholder"
+    }
+  ],
+  "clients": [
+    {
+      "id": "dae",
+      "name": "Department of Atomic Energy",
+      "sector": "Nuclear"
+    },
+    {
+      "id": "client-2",
+      "name": "Chemical Industry Client",
+      "sector": "Chemical"
+    },
+    {
+      "id": "client-3",
+      "name": "Energy Sector Client",
+      "sector": "Energy"
+    },
+    {
+      "id": "client-4",
+      "name": "Oil & Gas Client",
+      "sector": "Oil & Gas"
+    },
+    {
+      "id": "client-5",
+      "name": "Industrial Client",
+      "sector": "Industrial"
+    },
+    {
+      "id": "client-6",
+      "name": "Process Plant Client",
+      "sector": "Chemical"
+    }
+  ],
+  "contact": {
+    "inquiryPhone": "+91 70309 08811",
+    "quotePhone": "+91 70309 08812",
+    "phones": [
+      "+91 70309 08813",
+      "+91 70309 08814"
+    ],
+    "email": "pep.tarapur@gmail.com",
+    "address": {
+      "line1": "Plot No: G-52, Tarapur Industrial Area",
+      "line2": "Mumbai Metropolitan Region",
+      "state": "Maharashtra, INDIA",
+      "pin": "401506"
+    }
+  },
+  "navigation": [
+    {
+      "label": "About",
+      "href": "/about"
+    },
+    {
+      "label": "Services",
+      "href": "/services"
+    },
+    {
+      "label": "Projects",
+      "href": "/projects"
+    },
+    {
+      "label": "Clients",
+      "href": "/clients"
+    },
+    {
+      "label": "Contact",
+      "href": "/contact"
+    }
+  ]
+}

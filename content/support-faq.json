@@ -1,0 +1,54 @@
+{
+  "welcome": "Hi! I'm the PEPL support assistant. Ask a question or pick a topic below for quick answers about our services, location, and how to reach us.",
+  "fallback": "Thanks for your message. For detailed inquiries, please call us at +91 7030-9088-11, request a quote at +91 7030-9088-12, or visit our contact page. A team member will follow up during business hours.",
+  "faqs": [
+    {
+      "id": "services",
+      "question": "What services do you offer?",
+      "answer": "PEPL provides three core services: Engineering & Design (plant layout, P&I, structural design, project management), Fabrication & Erection (industrial structures, nuclear/chemical plants, stainless and carbon steel piping), and Operations & Support (O&M, shutdown maintenance, inspection, and manpower services).",
+      "keywords": ["service", "services", "offer", "do you do", "capabilities", "engineering", "fabrication", "maintenance", "o&m"]
+    },
+    {
+      "id": "quote",
+      "question": "How do I get a quote?",
+      "answer": "Call our quote line at +91 7030-9088-12 or fill out the contact form on our website. Share your project scope and our team will get back to you.",
+      "keywords": ["quote", "quotation", "price", "pricing", "cost", "estimate", "bid", "proposal"]
+    },
+    {
+      "id": "contact",
+      "question": "How can I contact you?",
+      "answer": "For inquiries, call +91 7030-9088-11. For quotes, call +91 7030-9088-12. You can also email pep.tarapur@gmail.com or use the contact form on our website.",
+      "keywords": ["contact", "phone", "call", "email", "reach", "talk", "number"]
+    },
+    {
+      "id": "location",
+      "question": "Where are you located?",
+      "answer": "Our registered office is at Plot No: G-52, Tarapur Industrial Area, Mumbai Metropolitan Region, Maharashtra, India — Pin 401506.",
+      "keywords": ["location", "address", "office", "where", "located", "tarapur", "maharashtra"]
+    },
+    {
+      "id": "industries",
+      "question": "Which industries do you serve?",
+      "answer": "We serve Nuclear, Chemical, Energy, Oil & Gas, and broader industrial sectors. PEPL is an esteemed vendor for the Department of Atomic Energy (DAE) in India.",
+      "keywords": ["industry", "industries", "sector", "sectors", "nuclear", "chemical", "oil", "gas", "dae", "atomic"]
+    },
+    {
+      "id": "projects",
+      "question": "What kind of projects have you done?",
+      "answer": "PEPL has completed 209 projects including nuclear process piping, chemical plant erection, cross-country utility pipelines, and industrial structural fabrication. Visit our Projects page for examples.",
+      "keywords": ["project", "projects", "portfolio", "work", "experience", "completed", "past"]
+    },
+    {
+      "id": "careers",
+      "question": "Are you hiring?",
+      "answer": "To apply for a position at Plant Engineering People, send your cover letter and C.V. to pep.tarapur@gmail.com.",
+      "keywords": ["job", "jobs", "career", "careers", "hiring", "employment", "vacancy", "apply", "cv", "resume"]
+    },
+    {
+      "id": "about",
+      "question": "Tell me about PEPL",
+      "answer": "Plant Engineering People (PEPL) is a professionally managed engineering company established in 1999, led by a qualified Mechanical Engineer with over 30 years of experience. We specialize in stainless steel pipe fabrication and engineering for critical industries.",
+      "keywords": ["about", "pepl", "company", "who", "history", "established", "founded"]
+    }
+  ]
+}

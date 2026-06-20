@@ -1,0 +1,123 @@
+import Link from "next/link";
+import Image from "next/image";
+import { Container } from "@/components/ui/Container";
+import { site } from "@/lib/site";
+
+export function Footer() {
+  const { contact } = site;
+  const fullAddress = `${contact.address.line1}, ${contact.address.line2}, ${contact.address.state} ${contact.address.pin}`;
+
+  return (
+    <footer className="bg-[#0f1a2b] text-white border-t-4 border-[#d41f3d]">
+      <Container className="py-16">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Column 1 — Brand */}
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="relative h-12 w-12 overflow-hidden rounded-md border border-white/10 shrink-0">
+                <Image src="/logo.png" alt={`${site.company.name} Logo`} width={48} height={48} className="object-contain" />
+              </div>
+              <div>
+                <p className="text-sm font-extrabold tracking-tight">{site.company.shortName}</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Plant Engineering People Pvt. Ltd.</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-300 leading-relaxed">{site.company.tagline}</p>
+
+            <div className="mt-5 inline-flex items-center gap-2 rounded-lg border border-amber-500/25 bg-amber-500/8 px-3 py-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="text-[10px] font-bold tracking-widest uppercase text-amber-400">DAE Approved Vendor</span>
+            </div>
+
+            {/* LinkedIn */}
+            <div className="mt-5 flex items-center gap-3">
+              <a
+                href="https://www.linkedin.com/company/plant-engineering-people"
+                target="_blank" rel="noopener noreferrer"
+                className="flex h-8 w-8 items-center justify-center rounded border border-white/10 bg-white/5 text-slate-400 hover:bg-[#0077b5] hover:text-white hover:border-[#0077b5] transition-all"
+                aria-label="LinkedIn"
+              >
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                </svg>
+              </a>
+              <span className="text-xs text-slate-500">Follow on LinkedIn</span>
+            </div>
+          </div>
+
+          {/* Column 2 — Navigation */}
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-2">
+              <span className="h-px w-4 bg-slate-600" /> Quick Links
+            </p>
+            <ul className="space-y-2.5">
+              {site.navigation.map((item) => (
+                <li key={item.href} className="flex items-center gap-2">
+                  <span className="h-px w-3 bg-[#d41f3d]/50 shrink-0" />
+                  <Link href={item.href} className="text-sm text-slate-300 hover:text-amber-400 transition-colors">{item.label}</Link>
+                </li>
+              ))}
+              <li className="flex items-center gap-2">
+                <span className="h-px w-3 bg-[#d41f3d]/50 shrink-0" />
+                <Link href="/supplier-login" className="text-sm text-slate-300 hover:text-amber-400 transition-colors">Supplier Portal</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3 — Services */}
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-2">
+              <span className="h-px w-4 bg-slate-600" /> Our Services
+            </p>
+            <ul className="space-y-2.5">
+              {site.services.map((service) => (
+                <li key={service.id} className="flex items-center gap-2">
+                  <span className="h-px w-3 bg-[#d41f3d]/50 shrink-0" />
+                  <Link href="/services" className="text-sm text-slate-300 hover:text-amber-400 transition-colors">{service.shortTitle}</Link>
+                </li>
+              ))}
+              <li className="flex items-center gap-2">
+                <span className="h-px w-3 bg-[#d41f3d]/50 shrink-0" />
+                <Link href="/services" className="text-sm text-slate-300 hover:text-amber-400 transition-colors">Cross-Country Pipelines</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4 — Contact */}
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-4 flex items-center gap-2">
+              <span className="h-px w-4 bg-slate-600" /> Contact Us
+            </p>
+            <address className="space-y-3 text-sm not-italic text-slate-400">
+              <p className="text-xs leading-relaxed">{fullAddress}</p>
+              <div className="space-y-2 pt-1">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Inquiries</p>
+                  <a href={`tel:${contact.inquiryPhone.replace(/\s/g, "")}`} className="text-sm text-slate-300 hover:text-amber-400 transition-colors">{contact.inquiryPhone}</a>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Quote Line</p>
+                  <a href={`tel:${contact.quotePhone.replace(/\s/g, "")}`} className="text-sm text-slate-300 hover:text-amber-400 transition-colors">{contact.quotePhone}</a>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Email</p>
+                  <a href={`mailto:${contact.email}`} className="text-sm text-slate-300 hover:text-amber-400 transition-colors break-all">{contact.email}</a>
+                </div>
+              </div>
+            </address>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-12 border-t border-white/8 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <p className="text-xs text-slate-500">© {new Date().getFullYear()} {site.company.name}. All rights reserved.</p>
+          <div className="flex items-center gap-3">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span className="text-[10px] font-semibold tracking-widest uppercase text-slate-600">ISO Certified · ASME Compliant · DAE Vendor</span>
+          </div>
+        </div>
+      </Container>
+    </footer>
+  );
+}

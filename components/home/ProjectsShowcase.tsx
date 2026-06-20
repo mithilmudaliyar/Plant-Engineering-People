@@ -1,0 +1,106 @@
+import Image from "next/image";
+import Link from "next/link";
+import { Container } from "@/components/ui/Container";
+import { site } from "@/lib/site";
+
+const projectImages: Record<string, string> = {
+  "nuclear-piping": "https://images.unsplash.com/photo-1473341304170-abb4b42ef80a?w=900&q=80",
+  "chemical-plant": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=900&q=80",
+  "utility-pipeline": "https://images.unsplash.com/photo-1535813547-99c456a41d4a?w=900&q=80",
+  "structural-fab": "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=900&q=80",
+};
+
+const sectorColors: Record<string, { badge: string; dot: string }> = {
+  Nuclear: { badge: "bg-blue-900/20 text-blue-200 border-blue-700/30", dot: "bg-blue-400" },
+  Chemical: { badge: "bg-emerald-900/20 text-emerald-200 border-emerald-700/30", dot: "bg-emerald-400" },
+  "Oil & Gas": { badge: "bg-amber-900/20 text-amber-200 border-amber-700/30", dot: "bg-amber-400" },
+  Industrial: { badge: "bg-slate-700/30 text-slate-300 border-slate-600/30", dot: "bg-slate-400" },
+};
+
+export function ProjectsShowcase() {
+  const [featured, ...rest] = site.projects;
+  const sideProjects = rest.slice(0, 3);
+  const featuredImage = projectImages[featured.id] || projectImages["structural-fab"];
+  const featuredColors = sectorColors[featured.sector] || sectorColors.Industrial;
+
+  return (
+    <section className="bg-slate-50 border-t border-gray-200 py-20">
+      <Container>
+        {/* Section header */}
+        <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <p className="section-label">Portfolio</p>
+            <h2 className="mt-3 text-3xl font-black text-[#1a3a52] sm:text-4xl">
+              Landmark Projects
+            </h2>
+            <p className="mt-2 text-base text-slate-500">Representative work across nuclear, chemical, and industrial sectors.</p>
+          </div>
+          <Link href="/projects" className="inline-flex items-center gap-2 text-sm font-bold text-[#1a3a52] hover:text-[#d41f3d] transition-colors whitespace-nowrap">
+            View all projects →
+          </Link>
+        </div>
+
+        {/* L&T-style two-column layout */}
+        <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+          {/* Featured (large) project */}
+          <div className="group relative overflow-hidden rounded-2xl bg-[#0f1f2e] min-h-[460px]">
+            <Image
+              src={featuredImage}
+              alt={featured.title}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-60"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0f1f2e] via-[#0f1f2e]/40 to-transparent" />
+
+            {/* Content overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-8">
+              <span className={`inline-flex items-center gap-1.5 rounded border px-3 py-1 text-xs font-bold uppercase tracking-wide backdrop-blur-sm ${featuredColors.badge}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${featuredColors.dot}`} />
+                {featured.sector}
+              </span>
+              <h3 className="mt-3 text-2xl font-black text-white leading-snug">{featured.title}</h3>
+              <p className="mt-2 text-sm text-white/70 leading-relaxed">{featured.description}</p>
+              <div className="mt-5 h-px bg-gradient-to-r from-[#d41f3d]/60 to-transparent" />
+            </div>
+          </div>
+
+          {/* Side project list */}
+          <div className="flex flex-col gap-4">
+            {sideProjects.map((project) => {
+              const img = projectImages[project.id] || projectImages["structural-fab"];
+              const colors = sectorColors[project.sector] || sectorColors.Industrial;
+              return (
+                <div key={project.id} className="group relative flex overflow-hidden rounded-xl bg-[#0f1f2e] h-36">
+                  <Image
+                    src={img}
+                    alt={project.title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105 opacity-50"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#0f1f2e]/90 via-[#0f1f2e]/60 to-transparent" />
+                  <div className="relative z-10 flex flex-col justify-center px-6 py-4">
+                    <span className={`inline-flex w-fit items-center gap-1.5 rounded border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide backdrop-blur-sm ${colors.badge}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />
+                      {project.sector}
+                    </span>
+                    <h3 className="mt-2 text-base font-bold text-white leading-snug group-hover:text-amber-300 transition-colors">{project.title}</h3>
+                    <p className="mt-1 text-xs text-white/60 line-clamp-2">{project.description}</p>
+                  </div>
+                </div>
+              );
+            })}
+
+            <Link
+              href="/projects"
+              className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 py-5 text-sm font-bold text-gray-500 hover:border-[#1a3a52] hover:text-[#1a3a52] transition-all"
+            >
+              View All Projects →
+            </Link>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
