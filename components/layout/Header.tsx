@@ -84,8 +84,8 @@ export function Header() {
               <Image src="/logo.png" alt={`${site.company.name} Logo`} width={48} height={48} className="object-contain" priority />
             </div>
             <div className={`flex flex-col leading-tight pl-3 transition-colors ${logoTextColor}`}>
-              <span className="text-sm font-extrabold tracking-tight">{site.company.shortName}</span>
-              <span className={`text-[10px] hidden sm:block font-medium opacity-70 ${isHomePage && !scrolled ? "text-white" : "text-gray-500"}`}>
+              <span className="hidden sm:block text-sm font-extrabold tracking-tight">{site.company.shortName}</span>
+              <span className={`text-[13px] sm:text-[10px] font-bold sm:font-medium sm:opacity-70 ${isHomePage && !scrolled ? "text-white" : "text-[#1a3a52] sm:text-gray-500"}`}>
                 Plant Engineering People
               </span>
             </div>
