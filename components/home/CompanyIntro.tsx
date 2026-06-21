@@ -6,7 +6,7 @@ const capabilities = [
   {
     icon: "⚛️",
     title: "Nuclear Engineering",
-    desc: "Fuel management, reprocessing, and nuclear plant fabrication.",
+    desc: "Precision piping, structural fabrication, and erection for nuclear facilities.",
   },
   {
     icon: "🏭",

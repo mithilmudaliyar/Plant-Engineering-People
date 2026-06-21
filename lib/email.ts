@@ -112,3 +112,56 @@ export async function sendOrderUpdateEmail(
     html: buildEmail("Order Status Updated", body),
   });
 }
+
+export async function sendConfirmedEmail(
+  email: string,
+  supplierName: string | null,
+  productName: string,
+  pricePerUnit: number,
+  unit: string,
+): Promise<void> {
+  const body = `
+    <p style="font-size:15px;color:#374151;margin:0 0 16px;">Dear <strong>${supplierName || "Supplier"}</strong>,</p>
+    <p style="font-size:15px;color:#374151;margin:0 0 24px;">Congratulations! Your quote has been <strong>confirmed</strong> by PEPL Operations.</p>
+    <div style="background:#f0fff4;border-left:4px solid #059669;border-radius:4px;padding:20px;margin:0 0 24px;">
+      <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.15em;color:#6b7280;text-transform:uppercase;">Confirmed Item</p>
+      <p style="margin:0 0 4px;font-size:18px;font-weight:800;color:#1a3a52;">${productName}</p>
+      <p style="margin:8px 0 0;font-size:20px;font-weight:900;color:#059669;">₹${pricePerUnit.toFixed(2)} / ${unit}</p>
+    </div>
+    <p style="font-size:14px;color:#374151;margin:0 0 16px;">PEPL Operations will be in touch regarding delivery, payment, and further details. Please check your Supplier Portal for updates.</p>
+    <a href="${process.env.NEXT_PUBLIC_BASE_URL || "https://plantengineeringpeople.com"}/supplier" style="display:inline-block;background:#059669;color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:6px;text-decoration:none;">View in Supplier Portal →</a>`;
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: `✅ Quote Confirmed: ${productName} — ₹${pricePerUnit.toFixed(2)}/${unit}`,
+    html: buildEmail("Your Quote Has Been Confirmed", body),
+  });
+}
+
+export async function sendOutbidEmail(
+  email: string,
+  supplierName: string | null,
+  productName: string,
+  winningPrice: number,
+  unit: string,
+): Promise<void> {
+  const body = `
+    <p style="font-size:15px;color:#374151;margin:0 0 16px;">Dear <strong>${supplierName || "Supplier"}</strong>,</p>
+    <p style="font-size:15px;color:#374151;margin:0 0 24px;">Thank you for your participation in the PEPL procurement round. Unfortunately, another supplier submitted a lower quote for the following item:</p>
+    <div style="background:#fff7ed;border-left:4px solid #f59e0b;border-radius:4px;padding:20px;margin:0 0 24px;">
+      <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.15em;color:#6b7280;text-transform:uppercase;">Item</p>
+      <p style="margin:0 0 8px;font-size:18px;font-weight:800;color:#1a3a52;">${productName}</p>
+      <p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:0.15em;color:#6b7280;text-transform:uppercase;">Winning Quote</p>
+      <p style="margin:0;font-size:20px;font-weight:900;color:#d97706;">₹${winningPrice.toFixed(2)} / ${unit}</p>
+    </div>
+    <p style="font-size:14px;color:#374151;margin:0 0 16px;">If you wish to remain competitive, you may log into the Supplier Portal and update your quote before PEPL finalises the order.</p>
+    <a href="${process.env.NEXT_PUBLIC_BASE_URL || "https://plantengineeringpeople.com"}/supplier" style="display:inline-block;background:#d41f3d;color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:6px;text-decoration:none;">Update My Quote →</a>`;
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: `You've Been Outbid: ${productName} — Current Best ₹${winningPrice.toFixed(2)}/${unit}`,
+    html: buildEmail("You Have Been Outbid", body),
+  });
+}

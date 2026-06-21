@@ -19,14 +19,15 @@ enum ContractOrderStatus {
 }
 
 model Supplier {
-  id            Int      @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   name          String?
-  email         String   @unique
+  email         String          @unique
   passwordHash  String
   passwordSalt  String
-  emailVerified Boolean  @default(false)
-  createdAt     DateTime @default(now())
+  emailVerified Boolean         @default(false)
+  createdAt     DateTime        @default(now())
   orders        ContractOrder[]
+  quotes        SupplierQuote[]
 }
 
 model Employee {
@@ -85,4 +86,41 @@ model ContactInquiry {
   subject   String
   message   String
   createdAt DateTime @default(now())
+}
+
+model BuyOrderSheet {
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String?
+  status      String         @default("OPEN")
+  uploadedBy  String
+  createdAt   DateTime       @default(now())
+  items       BuyOrderItem[]
+}
+
+model BuyOrderItem {
+  id            Int             @id @default(autoincrement())
+  sheetId       Int
+  sheet         BuyOrderSheet   @relation(fields: [sheetId], references: [id], onDelete: Cascade)
+  productName   String
+  quantity      Float
+  unit          String
+  specification String?
+  createdAt     DateTime        @default(now())
+  quotes        SupplierQuote[]
+}
+
+model SupplierQuote {
+  id           Int          @id @default(autoincrement())
+  itemId       Int
+  item         BuyOrderItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  supplierId   Int
+  supplier     Supplier     @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  pricePerUnit Float
+  notes        String?
+  status       String       @default("PENDING")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([itemId, supplierId])
 }

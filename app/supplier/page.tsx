@@ -6,274 +6,362 @@ import { Container } from "@/components/ui/Container";
 
 type Supplier = { id: number; email: string; name?: string };
 
+type BestQuote = { pricePerUnit: number; status: string } | null;
+
+type BuyOrderItem = {
+  id: number; productName: string; quantity: number; unit: string;
+  specification?: string | null; quotes: BestQuote[];
+};
+
+type BuyOrderSheet = {
+  id: number; title: string; description?: string | null; createdAt: string;
+  items: BuyOrderItem[];
+};
+
+type MyQuote = {
+  id: number; pricePerUnit: number; notes?: string | null; status: string; createdAt: string;
+  item: {
+    productName: string; quantity: number; unit: string;
+    sheet: { title: string };
+    quotes: { pricePerUnit: number }[];
+  };
+};
+
 type Order = {
-  id: number;
-  whatNeeded: string;
-  isTicket: boolean;
-  status: string;
-  createdAt: string;
-  employeeNotes?: string | null;
+  id: number; whatNeeded: string; isTicket: boolean; status: string; createdAt: string; employeeNotes?: string | null;
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  PENDING: "bg-amber-100 text-amber-800", IN_PROGRESS: "bg-blue-100 text-blue-800",
+  APPROVED: "bg-emerald-100 text-emerald-800", COMPLETED: "bg-indigo-100 text-indigo-800",
+  REJECTED: "bg-red-100 text-red-800", CANCELLED: "bg-gray-100 text-gray-600",
+  FORWARDED_TO_SENIOR: "bg-purple-100 text-purple-800", CANNOT_BE_DONE: "bg-rose-100 text-rose-800",
+  CONFIRMED: "bg-emerald-100 text-emerald-800", OUTBID: "bg-red-100 text-red-700",
 };
 
 export default function SupplierDashboard() {
   const router = useRouter();
   const [supplier, setSupplier] = useState<Supplier | null>(null);
+  const [activeTab, setActiveTab] = useState<"orders" | "market" | "bids">("orders");
   const [orders, setOrders] = useState<Order[]>([]);
+  const [sheets, setSheets] = useState<BuyOrderSheet[]>([]);
+  const [myQuotes, setMyQuotes] = useState<MyQuote[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Form state
-  const [whatNeeded, setWhatNeeded] = useState("");
-  const [briefDetails, setBriefDetails] = useState("");
-  const [isTicket, setIsTicket] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState("");
-  const [formSuccess, setFormSuccess] = useState("");
+  const [quoteInputs, setQuoteInputs] = useState<Record<number, { price: string; notes: string }>>({});
+  const [submitting, setSubmitting] = useState<number | null>(null);
+  const [newOrder, setNewOrder] = useState({ whatNeeded: "", dimensions: "", briefDetails: "", blueprintAvailable: false, isTicket: false });
+  const [submittingOrder, setSubmittingOrder] = useState(false);
+  const [orderMsg, setOrderMsg] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("supplier");
-    if (!saved) {
-      router.push("/supplier-login");
-    } else {
-      const s = JSON.parse(saved);
-      setSupplier(s);
-      fetchOrders(s.id);
-    }
+    if (!saved) { router.push("/supplier-login"); return; }
+    const s = JSON.parse(saved);
+    setSupplier(s);
+    fetchOrders(s.id);
+    fetchMarket();
+    fetchMyQuotes(s.id);
   }, [router]);
 
-  const fetchOrders = async (supplierId: number) => {
+  const fetchOrders = async (id: number) => {
     try {
-      const res = await fetch(`/api/orders?supplierId=${supplierId}`);
+      const res = await fetch(`/api/orders?supplierId=${id}`);
+      const data = await res.json();
+      if (data.success) setOrders(data.orders);
+    } catch (e) {} finally { setLoading(false); }
+  };
+
+  const fetchMarket = async () => {
+    try {
+      const res = await fetch("/api/buy-orders");
+      const data = await res.json();
+      if (data.success) setSheets(data.sheets);
+    } catch (e) {}
+  };
+
+  const fetchMyQuotes = async (id: number) => {
+    try {
+      const res = await fetch(`/api/quotes?supplierId=${id}`);
+      const data = await res.json();
+      if (data.success) setMyQuotes(data.quotes);
+    } catch (e) {}
+  };
+
+  const submitQuote = async (itemId: number) => {
+    if (!supplier) return;
+    const input = quoteInputs[itemId];
+    if (!input?.price || isNaN(parseFloat(input.price))) {
+      alert("Please enter a valid price."); return;
+    }
+    setSubmitting(itemId);
+    try {
+      const res = await fetch("/api/quotes", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId, supplierId: supplier.id, pricePerUnit: parseFloat(input.price), notes: input.notes }),
+      });
       const data = await res.json();
       if (data.success) {
-        setOrders(data.orders);
-      }
-    } catch (error) {
-      console.error("Failed to fetch orders:", error);
-    } finally {
-      setLoading(false);
-    }
+        setQuoteInputs(prev => ({ ...prev, [itemId]: { price: "", notes: "" } }));
+        fetchMarket(); fetchMyQuotes(supplier.id);
+      } else { alert(data.message); }
+    } catch { alert("Failed to submit quote."); } finally { setSubmitting(null); }
   };
 
-  const handleSignOut = () => {
-    localStorage.removeItem("supplier");
-    window.dispatchEvent(new Event("supplier-auth-change"));
-    router.push("/");
-  };
-
-  const handleSubmitOrder = async (e: React.FormEvent) => {
+  const submitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supplier) return;
-    setSubmitting(true);
-    setFormError("");
-    setFormSuccess("");
-
+    setSubmittingOrder(true); setOrderMsg("");
     try {
       const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          supplierId: supplier.id,
-          whatNeeded,
-          briefDetails,
-          isTicket,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        setFormSuccess("Successfully submitted! You will receive an email confirmation shortly.");
-        setWhatNeeded("");
-        setBriefDetails("");
-        setIsTicket(false);
-        fetchOrders(supplier.id); // Refresh list
-      } else {
-        setFormError(data.message || "Failed to submit.");
-      }
-    } catch (err) {
-      setFormError("An unexpected error occurred.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const cancelOrder = async (orderId: number) => {
-    if (!supplier) return;
-    if (!confirm("Are you sure you want to cancel this request?")) return;
-    
-    try {
-      const res = await fetch("/api/orders/cancel", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId, supplierId: supplier.id }),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ supplierId: supplier.id, ...newOrder }),
       });
       const data = await res.json();
       if (data.success) {
+        setOrderMsg("✅ Order submitted successfully!");
+        setNewOrder({ whatNeeded: "", dimensions: "", briefDetails: "", blueprintAvailable: false, isTicket: false });
         fetchOrders(supplier.id);
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      alert("Error canceling order.");
-    }
+      } else { setOrderMsg("❌ " + data.message); }
+    } catch { setOrderMsg("❌ Failed to submit."); } finally { setSubmittingOrder(false); }
   };
 
   if (!supplier) return null;
 
+  const tabs = [
+    { key: "orders", label: "My Orders" },
+    { key: "market", label: "🏪 Market Board" },
+    { key: "bids", label: "My Bids" },
+  ];
+
   return (
     <div className="min-h-screen bg-slate-50 py-10">
       <Container>
-        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 border-b border-gray-200 pb-6">
           <div>
-            <h1 className="text-3xl font-black text-[#1a3a52]">Supplier Portal</h1>
-            <p className="mt-1 text-sm text-slate-500">Welcome back, {supplier.name || supplier.email}</p>
+            <div className="inline-flex items-center gap-2 mb-2">
+              <span className="h-px w-6 bg-[#d41f3d]" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#d41f3d]">Supplier Portal</span>
+            </div>
+            <h1 className="text-3xl font-black text-[#1a3a52]">Welcome, {supplier.name || supplier.email}</h1>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="text-sm font-bold text-red-600 hover:text-red-800 transition-colors"
-          >
-            Sign Out
-          </button>
+          <div className="flex gap-3 items-center">
+            <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+              {tabs.map(t => (
+                <button key={t.key} onClick={() => setActiveTab(t.key as any)}
+                  className={`px-4 py-2 text-sm font-bold transition-colors ${activeTab === t.key ? "bg-[#1a3a52] text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => { localStorage.removeItem("supplier"); router.push("/"); }}
+              className="text-sm font-bold text-red-600 hover:text-red-800">Sign Out</button>
+          </div>
         </div>
 
-        <div className="grid lg:grid-cols-[1fr_2fr] gap-8">
-          {/* Left Column: Form */}
-          <div>
-            <div className="surface p-6 sticky top-24">
-              <h2 className="text-lg font-bold text-[#1a3a52] mb-1">New Request</h2>
-              <p className="text-xs text-slate-500 mb-6 pb-4 border-b border-gray-100">Submit a new fabrication order or consultation ticket.</p>
-              
-              {formSuccess && (
-                <div className="mb-4 rounded bg-green-50 p-3 text-sm font-semibold text-green-800 border border-green-200">
-                  {formSuccess}
-                </div>
-              )}
-              {formError && (
-                <div className="mb-4 rounded bg-red-50 p-3 text-sm font-semibold text-red-800 border border-red-200">
-                  {formError}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmitOrder} className="space-y-4">
+        {/* MY ORDERS TAB */}
+        {activeTab === "orders" && (
+          <div className="max-w-5xl space-y-6">
+            {/* Submit Order Form */}
+            <div className="surface p-6 md:p-8">
+              <h2 className="text-xl font-black text-[#1a3a52] mb-6">Submit a New Order / Consultation</h2>
+              {orderMsg && <p className={`mb-4 text-sm font-semibold p-3 rounded ${orderMsg.startsWith("✅") ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}>{orderMsg}</p>}
+              <form onSubmit={submitOrder} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Request Type</label>
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input type="radio" checked={!isTicket} onChange={() => setIsTicket(false)} className="text-[#1a3a52] focus:ring-[#1a3a52]" />
-                      Fabrication Order
-                    </label>
-                    <label className="flex items-center gap-2 text-sm">
-                      <input type="radio" checked={isTicket} onChange={() => setIsTicket(true)} className="text-[#1a3a52] focus:ring-[#1a3a52]" />
-                      Consultation Ticket
-                    </label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">What is needed? *</label>
+                  <textarea rows={3} required value={newOrder.whatNeeded} onChange={e => setNewOrder(p => ({ ...p, whatNeeded: e.target.value }))}
+                    placeholder="Describe the product or service you need..." className="w-full rounded border border-gray-300 p-2.5 text-sm outline-none focus:border-[#1a3a52]" />
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Dimensions / Specifications</label>
+                    <input type="text" value={newOrder.dimensions} onChange={e => setNewOrder(p => ({ ...p, dimensions: e.target.value }))}
+                      placeholder="e.g. 2 inch, Schedule 40" className="w-full rounded border border-gray-300 p-2.5 text-sm outline-none focus:border-[#1a3a52]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Additional Details</label>
+                    <input type="text" value={newOrder.briefDetails} onChange={e => setNewOrder(p => ({ ...p, briefDetails: e.target.value }))}
+                      placeholder="Delivery requirements, etc." className="w-full rounded border border-gray-300 p-2.5 text-sm outline-none focus:border-[#1a3a52]" />
                   </div>
                 </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Short Title / Scope</label>
-                  <input
-                    required
-                    type="text"
-                    value={whatNeeded}
-                    onChange={(e) => setWhatNeeded(e.target.value)}
-                    className="w-full rounded border-gray-300 p-2.5 text-sm focus:border-[#1a3a52] focus:ring-[#1a3a52] border"
-                    placeholder="e.g. SS Storage Tank 5000L"
-                  />
+                <div className="flex flex-wrap items-center gap-6">
+                  <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                    <input type="checkbox" checked={newOrder.blueprintAvailable} onChange={e => setNewOrder(p => ({ ...p, blueprintAvailable: e.target.checked }))} className="w-4 h-4" />
+                    Blueprint Available
+                  </label>
+                  <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                    <input type="checkbox" checked={newOrder.isTicket} onChange={e => setNewOrder(p => ({ ...p, isTicket: e.target.checked }))} className="w-4 h-4" />
+                    This is a Consultation Request
+                  </label>
                 </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Detailed Description</label>
-                  <textarea
-                    rows={4}
-                    value={briefDetails}
-                    onChange={(e) => setBriefDetails(e.target.value)}
-                    className="w-full rounded border-gray-300 p-2.5 text-sm focus:border-[#1a3a52] focus:ring-[#1a3a52] border"
-                    placeholder="Provide dimensions, materials, or issue details..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full rounded bg-[#1a3a52] px-4 py-3 text-sm font-bold text-white hover:bg-[#0f1f2e] disabled:opacity-50 transition-colors"
-                >
-                  {submitting ? "Submitting..." : "Submit Request"}
+                <button type="submit" disabled={submittingOrder}
+                  className="bg-[#1a3a52] text-white px-6 py-2.5 rounded text-sm font-bold hover:bg-[#0f1f2e] disabled:opacity-50 transition-colors">
+                  {submittingOrder ? "Submitting..." : "Submit Order"}
                 </button>
               </form>
             </div>
-          </div>
 
-          {/* Right Column: List */}
-          <div>
-            <h2 className="text-xl font-black text-[#1a3a52] mb-4">Your Submissions</h2>
-            
-            {loading ? (
-              <div className="flex justify-center py-10"><span className="text-sm text-slate-400 font-bold uppercase tracking-widest">Loading...</span></div>
-            ) : orders.length === 0 ? (
-              <div className="surface p-12 text-center border-dashed border-2 bg-slate-50">
-                <p className="text-slate-500 font-medium">You haven't submitted any requests yet.</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {orders.map((order) => (
-                  <div key={order.id} className="surface p-5 transition-shadow hover:shadow-md">
-                    <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
+            {/* Order History */}
+            <div>
+              <h2 className="text-xl font-black text-[#1a3a52] mb-4">Order History</h2>
+              {loading ? <p className="text-slate-400 text-center py-8">Loading...</p> :
+                orders.length === 0 ? <p className="text-slate-500 text-center py-8 surface">No orders submitted yet.</p> :
+                orders.map(order => (
+                  <div key={order.id} className="surface p-5 mb-3 border-l-4 border-l-[#1a3a52]">
+                    <div className="flex flex-wrap justify-between gap-3">
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${order.isTicket ? 'bg-indigo-100 text-indigo-800' : 'bg-emerald-100 text-emerald-800'}`}>
-                            {order.isTicket ? 'Ticket' : 'Order'}
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${order.isTicket ? "bg-indigo-100 text-indigo-800" : "bg-emerald-100 text-emerald-800"}`}>
+                            {order.isTicket ? "Ticket" : "Order"}
                           </span>
                           <span className="text-xs text-slate-500 font-mono">#PEPL-O-{order.id}</span>
                         </div>
-                        <h3 className="text-base font-bold text-[#1a3a52] leading-tight">{order.whatNeeded}</h3>
-                        <p className="text-xs text-slate-400 mt-1">Submitted {new Date(order.createdAt).toLocaleDateString()}</p>
-                      </div>
-
-                      <div className="flex flex-col items-start sm:items-end gap-2 shrink-0">
-                        <span className={`text-xs font-bold px-3 py-1 rounded-full border ${getStatusColor(order.status)}`}>
-                          {formatStatus(order.status)}
-                        </span>
-                        {order.status === "PENDING" && (
-                          <button
-                            onClick={() => cancelOrder(order.id)}
-                            className="text-xs font-bold text-red-500 hover:text-red-700 underline underline-offset-2"
-                          >
-                            Cancel Request
-                          </button>
+                        <p className="font-bold text-[#1a3a52]">{order.whatNeeded}</p>
+                        {order.employeeNotes && (
+                          <p className="text-sm text-slate-600 mt-1 italic border-l-2 border-amber-400 pl-2">"{order.employeeNotes}"</p>
                         )}
                       </div>
-                    </div>
-
-                    {order.employeeNotes && (
-                      <div className="mt-4 bg-blue-50/50 border border-blue-100 rounded p-3">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-blue-800 mb-1">PEPL Feedback</p>
-                        <p className="text-sm text-blue-900">{order.employeeNotes}</p>
+                      <div className="text-right">
+                        <span className={`inline-block text-[10px] font-bold uppercase px-3 py-1 rounded-full ${STATUS_COLORS[order.status] || "bg-gray-100 text-gray-600"}`}>
+                          {order.status.replace(/_/g, " ")}
+                        </span>
+                        <p className="text-xs text-slate-400 mt-1">{new Date(order.createdAt).toLocaleDateString()}</p>
                       </div>
-                    )}
+                    </div>
                   </div>
-                ))}
+                ))
+              }
+            </div>
+          </div>
+        )}
+
+        {/* MARKET BOARD TAB */}
+        {activeTab === "market" && (
+          <div className="max-w-5xl">
+            <div className="mb-6">
+              <h2 className="text-xl font-black text-[#1a3a52]">Market Board</h2>
+              <p className="text-sm text-slate-500 mt-1">Open procurement rounds from PEPL. Submit your best price to win the order.</p>
+            </div>
+            {sheets.length === 0 ? (
+              <p className="text-center py-12 text-slate-500 surface">No open procurement rounds at the moment. Check back soon!</p>
+            ) : (
+              sheets.map(sheet => (
+                <div key={sheet.id} className="surface mb-6 overflow-hidden">
+                  <div className="bg-[#1a3a52] px-6 py-4 text-white flex justify-between items-start">
+                    <div>
+                      <p className="font-bold text-lg">{sheet.title}</p>
+                      {sheet.description && <p className="text-sm text-slate-300 mt-0.5">{sheet.description}</p>}
+                    </div>
+                    <p className="text-xs text-slate-300">{new Date(sheet.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <div className="divide-y divide-gray-100">
+                    {sheet.items.map(item => {
+                      const bestQuote = item.quotes[0];
+                      const input = quoteInputs[item.id] || { price: "", notes: "" };
+                      return (
+                        <div key={item.id} className="p-6">
+                          <div className="flex flex-wrap gap-4 justify-between mb-4">
+                            <div>
+                              <h3 className="font-bold text-[#1a3a52] text-base">{item.productName}</h3>
+                              <p className="text-xs text-slate-500 mt-0.5">
+                                Required: <strong>{item.quantity} {item.unit}</strong>
+                                {item.specification && <> · Spec: <strong>{item.specification}</strong></>}
+                              </p>
+                            </div>
+                            {/* Current Best Quote Badge */}
+                            {bestQuote ? (
+                              <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2">
+                                <span className="text-amber-500 text-lg">🏆</span>
+                                <div>
+                                  <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Current Best</p>
+                                  <p className="text-lg font-black text-amber-800">₹{bestQuote.pricePerUnit.toFixed(2)}<span className="text-xs font-medium">/{item.unit}</span></p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
+                                <span className="text-blue-400 text-lg">⭐</span>
+                                <div>
+                                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">No Quotes Yet</p>
+                                  <p className="text-sm font-bold text-blue-800">Be the first to bid!</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          {/* Quote Input */}
+                          <div className="flex flex-wrap gap-3 items-end bg-slate-50 p-4 rounded-lg border border-gray-100">
+                            <div>
+                              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">Your Price (₹ per {item.unit})</label>
+                              <input type="number" step="0.01" min="0" value={input.price}
+                                onChange={e => setQuoteInputs(prev => ({ ...prev, [item.id]: { ...prev[item.id] || { notes: "" }, price: e.target.value } }))}
+                                placeholder="Enter your price"
+                                className="w-40 rounded border border-gray-300 p-2 text-sm font-bold outline-none focus:border-[#1a3a52]" />
+                            </div>
+                            <div className="flex-1 min-w-[180px]">
+                              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">Note (Optional)</label>
+                              <input type="text" value={input.notes}
+                                onChange={e => setQuoteInputs(prev => ({ ...prev, [item.id]: { ...prev[item.id] || { price: "" }, notes: e.target.value } }))}
+                                placeholder="Delivery time, brand, etc."
+                                className="w-full rounded border border-gray-300 p-2 text-sm outline-none focus:border-[#1a3a52]" />
+                            </div>
+                            <button onClick={() => submitQuote(item.id)} disabled={submitting === item.id}
+                              className="bg-[#d41f3d] text-white px-5 py-2 rounded text-sm font-bold hover:bg-red-700 disabled:opacity-50 transition-colors whitespace-nowrap">
+                              {submitting === item.id ? "Submitting..." : "Submit Quote"}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* MY BIDS TAB */}
+        {activeTab === "bids" && (
+          <div className="max-w-4xl">
+            <div className="mb-6">
+              <h2 className="text-xl font-black text-[#1a3a52]">My Bids</h2>
+              <p className="text-sm text-slate-500 mt-1">All quotes you have submitted. You can update a Pending quote by re-submitting from the Market Board.</p>
+            </div>
+            {myQuotes.length === 0 ? (
+              <p className="text-center py-12 text-slate-500 surface">You haven't submitted any quotes yet. Visit the Market Board to get started!</p>
+            ) : (
+              <div className="space-y-3">
+                {myQuotes.map(q => {
+                  const bestPrice = q.item.quotes[0]?.pricePerUnit;
+                  const isLeading = bestPrice != null && q.pricePerUnit <= bestPrice;
+                  return (
+                    <div key={q.id} className={`surface p-5 border-l-4 ${q.status === "CONFIRMED" ? "border-l-emerald-500" : q.status === "OUTBID" ? "border-l-red-400" : isLeading ? "border-l-amber-400" : "border-l-slate-300"}`}>
+                      <div className="flex flex-wrap justify-between gap-3">
+                        <div className="flex-1">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{q.item.sheet.title}</p>
+                          <p className="font-bold text-[#1a3a52] text-base mt-0.5">{q.item.productName}</p>
+                          <p className="text-xs text-slate-500">Required: {q.item.quantity} {q.item.unit}</p>
+                          {q.notes && <p className="text-xs text-slate-500 italic mt-1">"{q.notes}"</p>}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-black text-[#1a3a52]">₹{q.pricePerUnit.toFixed(2)}<span className="text-xs font-medium text-slate-400">/{q.item.unit}</span></p>
+                          <span className={`inline-block mt-1 text-[10px] font-bold uppercase px-3 py-1 rounded-full ${STATUS_COLORS[q.status] || "bg-gray-100 text-gray-600"}`}>
+                            {q.status}
+                          </span>
+                          {q.status === "OUTBID" && bestPrice != null && (
+                            <p className="text-xs text-red-500 font-semibold mt-1">Winning: ₹{bestPrice.toFixed(2)}/{q.item.unit}</p>
+                          )}
+                          {q.status === "PENDING" && isLeading && (
+                            <p className="text-xs text-amber-600 font-semibold mt-1">🏆 You're Leading!</p>
+                          )}
+                          <p className="text-xs text-slate-400 mt-1">{new Date(q.createdAt).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
-        </div>
+        )}
       </Container>
     </div>
   );
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "PENDING": return "bg-amber-50 text-amber-700 border-amber-200";
-    case "IN_PROGRESS": return "bg-blue-50 text-blue-700 border-blue-200";
-    case "APPROVED": return "bg-emerald-50 text-emerald-700 border-emerald-200";
-    case "COMPLETED": return "bg-indigo-50 text-indigo-700 border-indigo-200";
-    case "REJECTED": case "CANNOT_BE_DONE": return "bg-red-50 text-red-700 border-red-200";
-    case "CANCELLED": return "bg-gray-50 text-gray-700 border-gray-200";
-    case "FORWARDED_TO_SENIOR": return "bg-purple-50 text-purple-700 border-purple-200";
-    default: return "bg-gray-50 text-gray-700 border-gray-200";
-  }
-}
-
-function formatStatus(status: string) {
-  return status.replace(/_/g, " ");
 }
