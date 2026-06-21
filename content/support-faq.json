@@ -41,13 +41,13 @@
     {
       "id": "careers",
       "question": "Are you hiring?",
-      "answer": "To apply for a position at Plant Engineering People, send your cover letter and C.V. to pep.tarapur@gmail.com.",
+      "answer": "To apply for a position at Plant Engineering People Pvt. Ltd., send your cover letter and C.V. to pep.tarapur@gmail.com.",
       "keywords": ["job", "jobs", "career", "careers", "hiring", "employment", "vacancy", "apply", "cv", "resume"]
     },
     {
       "id": "about",
       "question": "Tell me about PEPL",
-      "answer": "Plant Engineering People (PEPL) is a professionally managed engineering company established in 1999, led by a qualified Mechanical Engineer with over 30 years of experience. We specialize in stainless steel pipe fabrication and engineering for critical industries.",
+      "answer": "Plant Engineering People Pvt. Ltd. (PEPL) is a professionally managed engineering company established in 1999, led by a qualified Mechanical Engineer with over 30 years of experience. We specialize in stainless steel pipe fabrication and engineering for critical industries.",
       "keywords": ["about", "pepl", "company", "who", "history", "established", "founded"]
     }
   ]

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -61,7 +61,7 @@ model OrderPhoto {
   id          Int           @id @default(autoincrement())
   orderId     Int
   order       ContractOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  photoUrl    String        @db.LongText
+  photoUrl    String
   uploadedAt  DateTime      @default(now())
   isFlagged   Boolean       @default(false)
   flagComment String?
@@ -83,6 +83,6 @@ model ContactInquiry {
   lastName  String
   email     String
   subject   String
-  message   String   @db.Text
+  message   String
   createdAt DateTime @default(now())
 }

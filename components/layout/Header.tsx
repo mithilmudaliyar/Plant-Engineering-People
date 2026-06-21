@@ -86,7 +86,7 @@ export function Header() {
             <div className={`flex flex-col leading-tight pl-3 transition-colors ${logoTextColor}`}>
               <span className="hidden sm:block text-sm font-extrabold tracking-tight">{site.company.shortName}</span>
               <span className={`text-[13px] sm:text-[10px] font-bold sm:font-medium sm:opacity-70 ${isHomePage && !scrolled ? "text-white" : "text-[#1a3a52] sm:text-gray-500"}`}>
-                Plant Engineering People
+                Plant Engineering People Pvt. Ltd.
               </span>
             </div>
           </Link>
