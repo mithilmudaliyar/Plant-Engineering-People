@@ -1,16 +1,7 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.EMAIL_PORT || "587"),
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-const FROM = process.env.EMAIL_FROM || `"PEPL" <${process.env.EMAIL_USER}>`;
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM = process.env.EMAIL_FROM || "PEPL Notifications <onboarding@resend.dev>";
 
 function buildEmail(heading: string, bodyHtml: string): string {
   return `
@@ -41,10 +32,22 @@ export async function sendOtpEmail(email: string, code: string): Promise<void> {
       <p style="margin:10px 0 0;font-size:12px;color:#9ca3af;">Expires in <strong>10 minutes</strong></p>
     </div>
     <p style="font-size:13px;color:#6b7280;margin:0;">If you didn't request this, please ignore this email.</p>`;
-  await transporter.sendMail({ from: FROM, to: email, subject: "Your PEPL Sign-In Code", html: buildEmail("Sign-In Verification Code", body) });
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Your PEPL Sign-In Code",
+    html: buildEmail("Sign-In Verification Code", body),
+  });
 }
 
-export async function sendOrderCreatedEmail(email: string, supplierName: string | null, orderId: number, whatNeeded: string, isTicket: boolean): Promise<void> {
+export async function sendOrderCreatedEmail(
+  email: string,
+  supplierName: string | null,
+  orderId: number,
+  whatNeeded: string,
+  isTicket: boolean
+): Promise<void> {
   const typeLabel = isTicket ? "Consultation Ticket" : "Fabrication Contract";
   const body = `
     <p style="font-size:15px;color:#374151;margin:0 0 16px;">Dear <strong>${supplierName || "Supplier"}</strong>,</p>
@@ -55,7 +58,13 @@ export async function sendOrderCreatedEmail(email: string, supplierName: string 
       <p style="margin:8px 0 0;font-size:14px;color:#374151;"><strong>Scope:</strong> ${whatNeeded}</p>
     </div>
     <p style="font-size:14px;color:#374151;margin:0 0 16px;">Track your order anytime in the <strong>Supplier Portal</strong>. You'll receive email updates when the status changes.</p>`;
-  await transporter.sendMail({ from: FROM, to: email, subject: `Order Confirmed: #PEPL-O-${orderId}`, html: buildEmail("Order Submitted Successfully", body) });
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: `Order Confirmed: #PEPL-O-${orderId}`,
+    html: buildEmail("Order Submitted Successfully", body),
+  });
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -69,7 +78,13 @@ const STATUS_COLORS: Record<string, string> = {
   REJECTED: "#dc2626", CANCELLED: "#6b7280", FORWARDED_TO_SENIOR: "#7c3aed", CANNOT_BE_DONE: "#be123c",
 };
 
-export async function sendOrderUpdateEmail(email: string, supplierName: string | null, orderId: number, newStatus: string, employeeNotes?: string | null): Promise<void> {
+export async function sendOrderUpdateEmail(
+  email: string,
+  supplierName: string | null,
+  orderId: number,
+  newStatus: string,
+  employeeNotes?: string | null
+): Promise<void> {
   const statusLabel = STATUS_LABELS[newStatus] || newStatus;
   const statusColor = STATUS_COLORS[newStatus] || "#1a3a52";
   const notesSection = employeeNotes
@@ -77,6 +92,7 @@ export async function sendOrderUpdateEmail(email: string, supplierName: string |
         <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.15em;color:#1e40af;text-transform:uppercase;">📢 Update from PEPL Operations</p>
         <p style="margin:0;font-size:14px;color:#1e3a8a;font-style:italic;">"${employeeNotes}"</p>
        </div>` : "";
+
   const body = `
     <p style="font-size:15px;color:#374151;margin:0 0 16px;">Dear <strong>${supplierName || "Supplier"}</strong>,</p>
     <p style="font-size:15px;color:#374151;margin:0 0 24px;">There has been an update on your PEPL order.</p>
@@ -87,6 +103,12 @@ export async function sendOrderUpdateEmail(email: string, supplierName: string |
       <span style="display:inline-block;background:${statusColor}18;color:${statusColor};border:1px solid ${statusColor}40;border-radius:999px;padding:6px 16px;font-size:14px;font-weight:700;">${statusLabel}</span>
       ${notesSection}
     </div>
-    <a href="${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/supplier" style="display:inline-block;background:#d41f3d;color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:6px;text-decoration:none;">View in Supplier Portal →</a>`;
-  await transporter.sendMail({ from: FROM, to: email, subject: `Order Update: #PEPL-O-${orderId} — ${statusLabel}`, html: buildEmail("Order Status Updated", body) });
+    <a href="${process.env.NEXT_PUBLIC_BASE_URL || "https://plantengineeringpeople.com"}/supplier" style="display:inline-block;background:#d41f3d;color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:6px;text-decoration:none;">View in Supplier Portal →</a>`;
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: `Order Update: #PEPL-O-${orderId} — ${statusLabel}`,
+    html: buildEmail("Order Status Updated", body),
+  });
 }
