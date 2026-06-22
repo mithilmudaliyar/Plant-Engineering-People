@@ -43,7 +43,7 @@ export default function EmployeeLogin() {
           <div className="bg-[#1a3a52] px-6 py-8 text-center text-white relative">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#d41f3d] via-amber-500 to-[#d41f3d]" />
             <div className="mx-auto h-12 w-12 bg-white rounded flex items-center justify-center mb-4">
-              <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain" />
+              <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain rounded-full" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight">Staff Portal</h1>
             <p className="text-slate-300 text-sm mt-1 font-light">Internal Operations Access</p>

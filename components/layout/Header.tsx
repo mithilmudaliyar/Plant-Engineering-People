@@ -80,8 +80,8 @@ export function Header() {
         <div className="flex h-18 items-center justify-between gap-4 py-3">
           {/* Logo — L&T style dark block */}
           <Link href="/" className="group flex cursor-pointer items-center gap-0 shrink-0">
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden">
-              <Image src="/logo.png" alt={`${site.company.name} Logo`} width={48} height={48} className="object-contain" priority />
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full">
+              <Image src="/logo.png" alt={`${site.company.name} Logo`} width={48} height={48} className="object-contain rounded-full" priority />
             </div>
             <div className={`flex flex-col leading-tight pl-3 transition-colors ${logoTextColor}`}>
               <span className="hidden sm:block text-sm font-extrabold tracking-tight">{site.company.shortName}</span>

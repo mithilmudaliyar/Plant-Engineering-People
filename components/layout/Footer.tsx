@@ -14,7 +14,7 @@ export function Footer() {
           {/* Column 1 — Brand */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="relative h-12 w-12 overflow-hidden rounded-md border border-white/10 shrink-0">
+              <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/10 shrink-0">
                 <Image src="/logo.png" alt={`${site.company.name} Logo`} width={48} height={48} className="object-contain" />
               </div>
               <div>
