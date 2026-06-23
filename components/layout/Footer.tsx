@@ -8,7 +8,7 @@ export function Footer() {
   const fullAddress = `${contact.address.line1}, ${contact.address.line2}, ${contact.address.state} ${contact.address.pin}`;
 
   return (
-    <footer className="bg-[#0f1a2b] text-white border-t-4 border-[#d41f3d]">
+    <footer className="bg-[#0C1B33] text-white border-t-4 border-orange-500">
       <Container className="py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Column 1 — Brand */}
@@ -18,19 +18,18 @@ export function Footer() {
                 <Image src="/logo.png" alt={`${site.company.name} Logo`} width={48} height={48} className="object-contain" />
               </div>
               <div>
-                <p className="text-sm font-extrabold tracking-tight">{site.company.shortName}</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">Plant Engineering People Pvt. Ltd.</p>
+                <p className="text-sm font-extrabold tracking-tight">Plant Engineering People Pvt. Ltd.</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">{site.company.shortName}</p>
               </div>
             </div>
 
             <p className="text-sm text-slate-300 leading-relaxed">{site.company.tagline}</p>
 
-            <div className="mt-5 inline-flex items-center gap-2 rounded-lg border border-amber-500/25 bg-amber-500/8 px-3 py-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-              <span className="text-[10px] font-bold tracking-widest uppercase text-amber-400">DAE Approved Vendor</span>
+            <div className="mt-5 inline-flex items-center gap-2 rounded-lg border border-orange-500/30 px-3 py-2" style={{ background: "rgba(212,31,61,0.1)" }}>
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-400 animate-pulse" />
+              <span className="text-[10px] font-bold tracking-widest uppercase text-orange-400">DAE Approved Vendor</span>
             </div>
 
-            {/* LinkedIn */}
             <div className="mt-5 flex items-center">
               <a
                 href="https://www.linkedin.com/company/plant-engineering-people"
@@ -56,13 +55,13 @@ export function Footer() {
             <ul className="space-y-2.5">
               {site.navigation.map((item) => (
                 <li key={item.href} className="flex items-center gap-2">
-                  <span className="h-px w-3 bg-[#d41f3d]/50 shrink-0" />
-                  <Link href={item.href} className="text-sm text-slate-300 hover:text-amber-400 transition-colors">{item.label}</Link>
+                  <span className="h-px w-3 bg-orange-500/50 shrink-0" />
+                  <Link href={item.href} className="text-sm text-slate-300 hover:text-orange-400 transition-colors cursor-pointer">{item.label}</Link>
                 </li>
               ))}
               <li className="flex items-center gap-2">
-                <span className="h-px w-3 bg-[#d41f3d]/50 shrink-0" />
-                <Link href="/supplier-login" className="text-sm text-slate-300 hover:text-amber-400 transition-colors">Supplier Portal</Link>
+                <span className="h-px w-3 bg-orange-500/50 shrink-0" />
+                <Link href="/login" className="text-sm text-slate-300 hover:text-orange-400 transition-colors cursor-pointer">Login / Portal</Link>
               </li>
             </ul>
           </div>
@@ -75,13 +74,13 @@ export function Footer() {
             <ul className="space-y-2.5">
               {site.services.map((service) => (
                 <li key={service.id} className="flex items-center gap-2">
-                  <span className="h-px w-3 bg-[#d41f3d]/50 shrink-0" />
-                  <Link href="/services" className="text-sm text-slate-300 hover:text-amber-400 transition-colors">{service.shortTitle}</Link>
+                  <span className="h-px w-3 bg-orange-500/50 shrink-0" />
+                  <Link href="/services" className="text-sm text-slate-300 hover:text-orange-400 transition-colors cursor-pointer">{service.shortTitle}</Link>
                 </li>
               ))}
               <li className="flex items-center gap-2">
-                <span className="h-px w-3 bg-[#d41f3d]/50 shrink-0" />
-                <Link href="/services" className="text-sm text-slate-300 hover:text-amber-400 transition-colors">Cross-Country Pipelines</Link>
+                <span className="h-px w-3 bg-orange-500/50 shrink-0" />
+                <Link href="/services" className="text-sm text-slate-300 hover:text-orange-400 transition-colors cursor-pointer">Cross-Country Pipelines</Link>
               </li>
             </ul>
           </div>
@@ -96,15 +95,15 @@ export function Footer() {
               <div className="space-y-2 pt-1">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Inquiries</p>
-                  <a href={`tel:${contact.inquiryPhone.replace(/\s/g, "")}`} className="text-sm text-slate-300 hover:text-amber-400 transition-colors">{contact.inquiryPhone}</a>
+                  <a href={`tel:${contact.inquiryPhone.replace(/\s/g, "")}`} className="text-sm text-slate-300 hover:text-orange-400 transition-colors">{contact.inquiryPhone}</a>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Quote Line</p>
-                  <a href={`tel:${contact.quotePhone.replace(/\s/g, "")}`} className="text-sm text-slate-300 hover:text-amber-400 transition-colors">{contact.quotePhone}</a>
+                  <a href={`tel:${contact.quotePhone.replace(/\s/g, "")}`} className="text-sm text-slate-300 hover:text-orange-400 transition-colors">{contact.quotePhone}</a>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Email</p>
-                  <a href={`mailto:${contact.email}`} className="text-sm text-slate-300 hover:text-amber-400 transition-colors break-all">{contact.email}</a>
+                  <a href={`mailto:${contact.email}`} className="text-sm text-slate-300 hover:text-orange-400 transition-colors break-all">{contact.email}</a>
                 </div>
               </div>
             </address>

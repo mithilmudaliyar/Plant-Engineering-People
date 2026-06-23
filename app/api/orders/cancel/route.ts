@@ -1,24 +1,21 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCurrentApplicant } from "@/lib/auth";
 
 export async function POST(request: Request) {
-  const body = await request.json().catch(() => null);
+  const account = await getCurrentApplicant();
+  if (!account) {
+    return NextResponse.json({ success: false, message: "Please sign in." }, { status: 401 });
+  }
 
+  const body = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
     return NextResponse.json({ success: false, message: "Invalid request body." }, { status: 400 });
   }
 
-  const { orderId, supplierId } = body;
-
-  if (!orderId || !supplierId) {
-    return NextResponse.json({ success: false, message: "Order ID and Supplier ID are required." }, { status: 400 });
-  }
-
-  const oId = parseInt(orderId, 10);
-  const sId = parseInt(supplierId, 10);
-
-  if (isNaN(oId) || isNaN(sId)) {
-    return NextResponse.json({ success: false, message: "Invalid ID types provided." }, { status: 400 });
+  const oId = parseInt(body.orderId, 10);
+  if (isNaN(oId)) {
+    return NextResponse.json({ success: false, message: "Invalid order id." }, { status: 400 });
   }
 
   try {
@@ -30,7 +27,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Order not found." }, { status: 404 });
     }
 
-    if (order.supplierId !== sId) {
+    // Ownership enforced against the session account, not a client-supplied id.
+    if (order.supplierId !== account.id) {
       return NextResponse.json({ success: false, message: "Unauthorized operation." }, { status: 403 });
     }
 

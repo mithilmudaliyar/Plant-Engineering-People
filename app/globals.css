@@ -1,25 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary: #1a3a52;
-  --color-primary-dark: #0f1f2e;
+  --color-primary: #0C1B33;
+  --color-primary-dark: #08111f;
   --color-accent: #d41f3d;
-  --color-accent-light: #e63a50;
-  --color-gold: #f59e0b;
-  --color-muted: #6b7280;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --color-accent-light: #b01830;
+  --color-muted: #64748b;
+  --font-sans: var(--font-body), system-ui, sans-serif;
+  --font-heading: var(--font-heading), Georgia, serif;
+
+  /* Brand red — remaps the orange-* utility scale to the logo red (#d41f3d) */
+  --color-orange-50: #fdf2f4;
+  --color-orange-100: #fbe3e8;
+  --color-orange-200: #f6c2cc;
+  --color-orange-300: #ef93a4;
+  --color-orange-400: #e44e68;
+  --color-orange-500: #d41f3d;
+  --color-orange-600: #b01830;
+  --color-orange-700: #931428;
+  --color-orange-800: #7a1322;
+  --color-orange-900: #66131f;
 }
 
 /* ===== BASE ===== */
 body {
   background: #f8fafc;
   color: #1f2937;
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-body, system-ui, sans-serif);
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-heading, Georgia, serif);
 }
 
 /* ===== SECTION LABELS ===== */
@@ -112,9 +123,9 @@ h1, h2, h3, h4 {
 
 /* ===== STEP INDICATOR (OTP) ===== */
 .step-active {
-  background: #1a3a52;
+  background: #0C1B33;
   color: white;
-  border-color: #1a3a52;
+  border-color: #0C1B33;
 }
 
 .step-done {
@@ -171,4 +182,10 @@ h1, h2, h3, h4 {
   background-size: 1200px 100%;
   animation: shimmer 1.8s ease-in-out infinite;
   border-radius: 6px;
+}
+
+/* ===== FOCUS ===== */
+*:focus-visible {
+  outline: 3px solid #d41f3d;
+  outline-offset: 2px;
 }

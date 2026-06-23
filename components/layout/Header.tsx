@@ -3,27 +3,27 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { site } from "@/lib/site";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const loginMenuRef = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname();
   const router = useRouter();
-  const [supplier, setSupplier] = useState<{ id: number; email: string; name?: string } | null>(null);
+  const [account, setAccount] = useState<{ id: number; email: string; name: string } | null>(null);
   const [employee, setEmployee] = useState<{ id: number; email: string; name: string; role: string } | null>(null);
 
   const isHomePage = pathname === "/";
 
   const checkAuth = () => {
-    try {
-      const savedSupplier = localStorage.getItem("supplier");
-      setSupplier(savedSupplier ? JSON.parse(savedSupplier) : null);
-    } catch { setSupplier(null); }
+    // Unified external account — identity from the secure session cookie.
+    fetch("/api/careers/me")
+      .then((r) => r.json())
+      .then((d) => setAccount(d.authenticated ? d.applicant : null))
+      .catch(() => setAccount(null));
+    // Staff (mostly on the staff subdomain) — display copy in localStorage.
     try {
       const savedEmployee = localStorage.getItem("employee");
       setEmployee(savedEmployee ? JSON.parse(savedEmployee) : null);
@@ -32,10 +32,10 @@ export function Header() {
 
   useEffect(() => {
     checkAuth();
-    window.addEventListener("supplier-auth-change", checkAuth);
+    window.addEventListener("account-auth-change", checkAuth);
     window.addEventListener("employee-auth-change", checkAuth);
     return () => {
-      window.removeEventListener("supplier-auth-change", checkAuth);
+      window.removeEventListener("account-auth-change", checkAuth);
       window.removeEventListener("employee-auth-change", checkAuth);
     };
   }, []);
@@ -46,31 +46,30 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (loginMenuRef.current && !loginMenuRef.current.contains(e.target as Node)) setLoginOpen(false);
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleSignOut = () => {
-    localStorage.removeItem("supplier");
+    // Clear both possible sessions (unified account + staff); no-ops if absent.
+    fetch("/api/careers/logout", { method: "POST" }).catch(() => {});
+    fetch("/api/employee/logout", { method: "POST" }).catch(() => {});
     localStorage.removeItem("employee");
-    window.dispatchEvent(new Event("supplier-auth-change"));
+    setAccount(null);
+    setEmployee(null);
+    window.dispatchEvent(new Event("account-auth-change"));
     window.dispatchEvent(new Event("employee-auth-change"));
     router.push("/");
     setMobileOpen(false);
   };
 
-  // On homepage, header starts transparent over hero; on scroll becomes solid
   const headerBg = isHomePage && !scrolled
     ? "bg-transparent border-transparent"
-    : "bg-white border-gray-200 shadow-sm";
+    : "bg-white/95 backdrop-blur-md border-slate-200 shadow-sm";
 
-  const logoTextColor = isHomePage && !scrolled ? "text-white" : "text-[#1a3a52]";
-  const navTextColor = isHomePage && !scrolled ? "text-white/90 hover:text-white" : "text-gray-700 hover:text-[#1a3a52]";
-  const activeNavColor = isHomePage && !scrolled ? "text-amber-400 border-b-2 border-amber-400" : "text-[#d41f3d] border-b-2 border-[#d41f3d]";
+  const logoTextColor = isHomePage && !scrolled ? "text-white" : "text-[#0C1B33]";
+  const navTextColor = isHomePage && !scrolled
+    ? "text-white/85 hover:text-white"
+    : "text-slate-600 hover:text-[#0C1B33]";
+  const activeNavColor = isHomePage && !scrolled
+    ? "text-orange-400 border-b-2 border-orange-400"
+    : "text-orange-500 border-b-2 border-orange-500";
 
   const positionClass = isHomePage ? "fixed w-full" : "sticky top-0";
 
@@ -78,16 +77,16 @@ export function Header() {
     <header className={`${positionClass} z-50 border-b transition-all duration-300 ${headerBg}`}>
       <Container>
         <div className="flex h-18 items-center justify-between gap-4 py-3">
-          {/* Logo — L&T style dark block */}
+          {/* Logo */}
           <Link href="/" className="group flex cursor-pointer items-center gap-0 shrink-0">
             <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full">
               <Image src="/logo.png" alt={`${site.company.name} Logo`} width={48} height={48} className="object-contain rounded-full" priority />
             </div>
             <div className={`flex flex-col leading-tight pl-3 transition-colors ${logoTextColor}`}>
-              <span className="hidden sm:block text-sm font-extrabold tracking-tight">{site.company.shortName}</span>
-              <span className={`text-[13px] sm:text-[10px] font-bold sm:font-medium sm:opacity-70 ${isHomePage && !scrolled ? "text-white" : "text-[#1a3a52] sm:text-gray-500"}`}>
+              <span className="text-[13px] sm:text-sm font-extrabold tracking-tight">
                 Plant Engineering People Pvt. Ltd.
               </span>
+              <span className={`hidden sm:block text-[10px] font-medium tracking-wide sm:opacity-70 ${isHomePage && !scrolled ? "text-white" : "text-[#0C1B33] sm:text-slate-500"}`}>{site.company.shortName}</span>
             </div>
           </Link>
 
@@ -99,7 +98,7 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-4 py-2 text-sm font-semibold transition-all rounded-sm ${
+                  className={`px-4 py-2 text-sm font-semibold transition-all rounded-sm cursor-pointer ${
                     active ? activeNavColor : navTextColor
                   }`}
                 >
@@ -113,67 +112,54 @@ export function Header() {
           <div className="hidden md:flex items-center gap-2">
             <Link
               href="/contact"
-              className="rounded-md bg-[#d41f3d] px-5 py-2 text-sm font-bold text-white hover:bg-[#b01830] transition-colors whitespace-nowrap"
+              className="rounded-xl bg-orange-500 px-5 py-2 text-sm font-bold text-white hover:bg-orange-600 transition-colors whitespace-nowrap"
             >
               Get a Quote
             </Link>
 
             {employee ? (
               <div className="flex items-center gap-2">
-                <Link href="/employee" className="px-4 py-2 text-sm font-semibold text-white bg-[#1a3a52] rounded-md hover:bg-[#0f1f2e] transition-colors whitespace-nowrap">
+                <Link href="/employee" className="px-4 py-2 text-sm font-semibold text-white bg-[#0C1B33] rounded-xl hover:bg-[#08111f] transition-colors whitespace-nowrap">
                   Staff Portal
                 </Link>
-                <button onClick={handleSignOut} className="px-3 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-md hover:border-[#d41f3d] hover:text-[#d41f3d] transition-colors cursor-pointer">
+                <button onClick={handleSignOut} className="px-3 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-colors cursor-pointer">
                   Sign Out
                 </button>
               </div>
-            ) : supplier ? (
+            ) : account ? (
               <div className="flex items-center gap-2">
-                <Link href="/supplier" className="px-4 py-2 text-sm font-semibold text-white bg-[#1a3a52] rounded-md hover:bg-[#0f1f2e] transition-colors whitespace-nowrap">
-                  Supplier Portal
+                <Link href="/supplier" className="px-4 py-2 text-sm font-semibold text-white bg-[#0C1B33] rounded-xl hover:bg-[#08111f] transition-colors whitespace-nowrap">
+                  My Portal
                 </Link>
-                <button onClick={handleSignOut} className="px-3 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-md hover:border-[#d41f3d] hover:text-[#d41f3d] transition-colors cursor-pointer">
+                <button onClick={handleSignOut} className="px-3 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-colors cursor-pointer">
                   Sign Out
                 </button>
               </div>
             ) : (
-              <div className="relative" ref={loginMenuRef}>
-                <button
-                  type="button"
-                  onClick={() => setLoginOpen((v) => !v)}
-                  aria-expanded={loginOpen}
-                  className={`px-4 py-2 text-sm font-semibold border rounded-md transition-colors cursor-pointer ${
-                    isHomePage && !scrolled
-                      ? "border-white/40 text-white hover:bg-white/10"
-                      : "border-gray-300 text-gray-700 hover:border-[#1a3a52] hover:text-[#1a3a52]"
-                  }`}
-                >
-                  Login ▾
-                </button>
-                {loginOpen && (
-                  <div className="absolute right-0 z-20 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden">
-                    <Link href="/supplier-login" onClick={() => setLoginOpen(false)} className="block px-4 py-3 text-sm text-gray-700 hover:bg-slate-50 hover:text-[#d41f3d] border-b border-gray-100">
-                      Supplier Portal
-                    </Link>
-                    <Link href="/employee-login" onClick={() => setLoginOpen(false)} className="block px-4 py-3 text-sm text-gray-700 hover:bg-slate-50 hover:text-[#d41f3d]">
-                      Employee Portal
-                    </Link>
-                  </div>
-                )}
-              </div>
+              <Link
+                href="/login"
+                className={`px-4 py-2 text-sm font-semibold border rounded-xl transition-colors cursor-pointer ${
+                  isHomePage && !scrolled
+                    ? "border-white/40 text-white hover:bg-white/10"
+                    : "border-slate-300 text-slate-700 hover:border-[#0C1B33] hover:text-[#0C1B33]"
+                }`}
+              >
+                Login
+              </Link>
             )}
           </div>
 
           {/* Mobile menu button */}
           <button
             type="button"
-            className={`inline-flex md:hidden items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+            className={`inline-flex md:hidden items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition-colors cursor-pointer ${
               isHomePage && !scrolled
                 ? "border-white/40 text-white hover:bg-white/10"
-                : "border-gray-300 text-[#1a3a52] hover:bg-gray-50"
+                : "border-slate-300 text-[#0C1B33] hover:bg-slate-50"
             }`}
             onClick={() => setMobileOpen((v) => !v)}
             aria-expanded={mobileOpen}
+            aria-label="Toggle navigation"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {mobileOpen
@@ -185,33 +171,32 @@ export function Header() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <nav className="md:hidden border-t border-gray-200 bg-white py-4 space-y-1">
+          <nav className="md:hidden border-t border-slate-200 bg-white py-4 space-y-1">
             {site.navigation.map((item) => (
               <Link key={item.href} href={item.href}
-                className={`block px-4 py-2.5 text-sm font-semibold rounded-md ${pathname === item.href ? "text-[#d41f3d] bg-red-50" : "text-gray-700 hover:bg-gray-50 hover:text-[#1a3a52]"}`}
+                className={`block px-4 py-2.5 text-sm font-semibold rounded-lg cursor-pointer ${pathname === item.href ? "text-orange-500 bg-orange-50" : "text-slate-700 hover:bg-slate-50 hover:text-[#0C1B33]"}`}
                 onClick={() => setMobileOpen(false)}>
                 {item.label}
               </Link>
             ))}
-            <div className="pt-2 px-4 space-y-2 border-t border-gray-100 mt-2">
+            <div className="pt-2 px-4 space-y-2 border-t border-slate-100 mt-2">
               {employee ? (
                 <>
-                  <Link href="/employee" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-md bg-[#1a3a52] px-4 py-2.5 text-sm font-bold text-white">Staff Portal</Link>
-                  <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-md cursor-pointer">Sign Out</button>
+                  <Link href="/employee" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-xl bg-[#0C1B33] px-4 py-2.5 text-sm font-bold text-white cursor-pointer">Staff Portal</Link>
+                  <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50 rounded-lg cursor-pointer">Sign Out</button>
                 </>
-              ) : supplier ? (
+              ) : account ? (
                 <>
-                  <Link href="/supplier" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-md bg-[#1a3a52] px-4 py-2.5 text-sm font-bold text-white">Supplier Portal</Link>
-                  <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-md cursor-pointer">Sign Out</button>
+                  <Link href="/supplier" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-xl bg-[#0C1B33] px-4 py-2.5 text-sm font-bold text-white cursor-pointer">My Portal</Link>
+                  <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50 rounded-lg cursor-pointer">Sign Out</button>
                 </>
               ) : (
                 <>
-                  <Link href="/supplier-login" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-md">Supplier Login</Link>
-                  <Link href="/supplier-register" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-md">Register</Link>
-                  <Link href="/employee-login" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-md">Employee Login</Link>
+                  <Link href="/login" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg cursor-pointer">Login</Link>
+                  <Link href="/register" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg cursor-pointer">Create account</Link>
                 </>
               )}
-              <Link href="/contact" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-md bg-[#d41f3d] px-4 py-2.5 text-sm font-bold text-white">Get a Quote</Link>
+              <Link href="/contact" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-orange-600 transition-colors cursor-pointer">Get a Quote</Link>
             </div>
           </nav>
         )}

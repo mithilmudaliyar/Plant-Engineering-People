@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.EMAIL_FROM || "PEPL Notifications <onboarding@resend.dev>";
+const FROM = process.env.EMAIL_FROM || "PEPPL Notifications <onboarding@resend.dev>";
 
 function buildEmail(heading: string, bodyHtml: string): string {
   return `
@@ -24,7 +24,7 @@ function buildEmail(heading: string, bodyHtml: string): string {
 export async function sendOtpEmail(email: string, code: string): Promise<void> {
   const body = `
     <p style="font-size:15px;color:#374151;margin:0 0 24px;">
-      You requested a sign-in code for your <strong>PEPL Supplier Portal</strong>. Use the code below to complete sign-in.
+      You requested a sign-in code for your <strong>PEPPL Supplier Portal</strong>. Use the code below to complete sign-in.
     </p>
     <div style="background:#f0f4ff;border:2px dashed #1a3a52;border-radius:12px;padding:28px;text-align:center;margin:0 0 24px;">
       <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:0.2em;color:#6b7280;text-transform:uppercase;">Your Sign-In Code</p>
@@ -36,8 +36,53 @@ export async function sendOtpEmail(email: string, code: string): Promise<void> {
   await resend.emails.send({
     from: FROM,
     to: email,
-    subject: "Your PEPL Sign-In Code",
+    subject: "Your PEPPL Sign-In Code",
     html: buildEmail("Sign-In Verification Code", body),
+  });
+}
+
+// ===== CAREERS / APPLICANT AUTH EMAILS =====
+
+export async function sendVerificationEmail(email: string, code: string): Promise<void> {
+  const body = `
+    <p style="font-size:15px;color:#374151;margin:0 0 24px;">
+      Welcome to the <strong>PEPPL Careers Portal</strong>. Use the one-time code below to verify your email address and activate your account.
+    </p>
+    <div style="background:#f0f4ff;border:2px dashed #1a3a52;border-radius:12px;padding:28px;text-align:center;margin:0 0 24px;">
+      <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:0.2em;color:#6b7280;text-transform:uppercase;">Email Verification Code</p>
+      <p style="margin:0;font-size:42px;font-weight:900;letter-spacing:0.3em;color:#1a3a52;font-family:monospace;">${code}</p>
+      <p style="margin:10px 0 0;font-size:12px;color:#9ca3af;">Expires in <strong>15 minutes</strong></p>
+    </div>
+    <p style="font-size:13px;color:#6b7280;margin:0;">You only need to verify once. After this, sign in with your email and password. If you didn't create this account, please ignore this email.</p>`;
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Verify your PEPPL Careers account",
+    html: buildEmail("Verify Your Email", body),
+  });
+}
+
+export async function sendPasswordResetEmail(email: string, resetUrl: string): Promise<void> {
+  const body = `
+    <p style="font-size:15px;color:#374151;margin:0 0 16px;">
+      We received a request to reset the password for your <strong>PEPPL Careers</strong> account.
+    </p>
+    <p style="font-size:15px;color:#374151;margin:0 0 24px;">
+      Click the button below to choose a new password. This link expires in <strong>30 minutes</strong> and can be used only once.
+    </p>
+    <div style="text-align:center;margin:0 0 28px;">
+      <a href="${resetUrl}" style="display:inline-block;background:#d41f3d;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;">Reset My Password</a>
+    </div>
+    <p style="font-size:12px;color:#9ca3af;margin:0 0 8px;">If the button doesn't work, copy and paste this URL into your browser:</p>
+    <p style="font-size:12px;color:#1a3a52;word-break:break-all;margin:0 0 24px;">${resetUrl}</p>
+    <p style="font-size:13px;color:#6b7280;margin:0;">If you didn't request a password reset, you can safely ignore this email — your password will not change.</p>`;
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Reset your PEPPL Careers password",
+    html: buildEmail("Password Reset Request", body),
   });
 }
 
@@ -51,10 +96,10 @@ export async function sendOrderCreatedEmail(
   const typeLabel = isTicket ? "Consultation Ticket" : "Fabrication Contract";
   const body = `
     <p style="font-size:15px;color:#374151;margin:0 0 16px;">Dear <strong>${supplierName || "Supplier"}</strong>,</p>
-    <p style="font-size:15px;color:#374151;margin:0 0 24px;">Your <strong>${typeLabel}</strong> has been submitted to PEPL operations.</p>
+    <p style="font-size:15px;color:#374151;margin:0 0 24px;">Your <strong>${typeLabel}</strong> has been submitted to PEPPL operations.</p>
     <div style="background:#f9fafb;border-left:4px solid #d41f3d;border-radius:4px;padding:20px;margin:0 0 24px;">
       <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:0.15em;color:#6b7280;text-transform:uppercase;">Order Reference</p>
-      <p style="margin:0 0 4px;font-size:22px;font-weight:800;color:#1a3a52;font-family:monospace;">#PEPL-O-${orderId}</p>
+      <p style="margin:0 0 4px;font-size:22px;font-weight:800;color:#1a3a52;font-family:monospace;">#PEPPL-O-${orderId}</p>
       <p style="margin:8px 0 0;font-size:14px;color:#374151;"><strong>Scope:</strong> ${whatNeeded}</p>
     </div>
     <p style="font-size:14px;color:#374151;margin:0 0 16px;">Track your order anytime in the <strong>Supplier Portal</strong>. You'll receive email updates when the status changes.</p>`;
@@ -62,7 +107,7 @@ export async function sendOrderCreatedEmail(
   await resend.emails.send({
     from: FROM,
     to: email,
-    subject: `Order Confirmed: #PEPL-O-${orderId}`,
+    subject: `Order Confirmed: #PEPPL-O-${orderId}`,
     html: buildEmail("Order Submitted Successfully", body),
   });
 }
@@ -89,16 +134,16 @@ export async function sendOrderUpdateEmail(
   const statusColor = STATUS_COLORS[newStatus] || "#1a3a52";
   const notesSection = employeeNotes
     ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:16px;margin:16px 0 0;">
-        <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.15em;color:#1e40af;text-transform:uppercase;">📢 Update from PEPL Operations</p>
+        <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.15em;color:#1e40af;text-transform:uppercase;">📢 Update from PEPPL Operations</p>
         <p style="margin:0;font-size:14px;color:#1e3a8a;font-style:italic;">"${employeeNotes}"</p>
        </div>` : "";
 
   const body = `
     <p style="font-size:15px;color:#374151;margin:0 0 16px;">Dear <strong>${supplierName || "Supplier"}</strong>,</p>
-    <p style="font-size:15px;color:#374151;margin:0 0 24px;">There has been an update on your PEPL order.</p>
+    <p style="font-size:15px;color:#374151;margin:0 0 24px;">There has been an update on your PEPPL order.</p>
     <div style="background:#f9fafb;border-radius:8px;padding:20px;margin:0 0 24px;border:1px solid #e5e7eb;">
       <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.15em;color:#6b7280;text-transform:uppercase;">Order Reference</p>
-      <p style="margin:0 0 12px;font-size:18px;font-weight:800;color:#1a3a52;font-family:monospace;">#PEPL-O-${orderId}</p>
+      <p style="margin:0 0 12px;font-size:18px;font-weight:800;color:#1a3a52;font-family:monospace;">#PEPPL-O-${orderId}</p>
       <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.15em;color:#6b7280;text-transform:uppercase;">New Status</p>
       <span style="display:inline-block;background:${statusColor}18;color:${statusColor};border:1px solid ${statusColor}40;border-radius:999px;padding:6px 16px;font-size:14px;font-weight:700;">${statusLabel}</span>
       ${notesSection}
@@ -108,7 +153,7 @@ export async function sendOrderUpdateEmail(
   await resend.emails.send({
     from: FROM,
     to: email,
-    subject: `Order Update: #PEPL-O-${orderId} — ${statusLabel}`,
+    subject: `Order Update: #PEPPL-O-${orderId} — ${statusLabel}`,
     html: buildEmail("Order Status Updated", body),
   });
 }
@@ -122,13 +167,13 @@ export async function sendConfirmedEmail(
 ): Promise<void> {
   const body = `
     <p style="font-size:15px;color:#374151;margin:0 0 16px;">Dear <strong>${supplierName || "Supplier"}</strong>,</p>
-    <p style="font-size:15px;color:#374151;margin:0 0 24px;">Congratulations! Your quote has been <strong>confirmed</strong> by PEPL Operations.</p>
+    <p style="font-size:15px;color:#374151;margin:0 0 24px;">Congratulations! Your quote has been <strong>confirmed</strong> by PEPPL Operations.</p>
     <div style="background:#f0fff4;border-left:4px solid #059669;border-radius:4px;padding:20px;margin:0 0 24px;">
       <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.15em;color:#6b7280;text-transform:uppercase;">Confirmed Item</p>
       <p style="margin:0 0 4px;font-size:18px;font-weight:800;color:#1a3a52;">${productName}</p>
       <p style="margin:8px 0 0;font-size:20px;font-weight:900;color:#059669;">₹${pricePerUnit.toFixed(2)} / ${unit}</p>
     </div>
-    <p style="font-size:14px;color:#374151;margin:0 0 16px;">PEPL Operations will be in touch regarding delivery, payment, and further details. Please check your Supplier Portal for updates.</p>
+    <p style="font-size:14px;color:#374151;margin:0 0 16px;">PEPPL Operations will be in touch regarding delivery, payment, and further details. Please check your Supplier Portal for updates.</p>
     <a href="${process.env.NEXT_PUBLIC_BASE_URL || "https://plantengineeringpeople.com"}/supplier" style="display:inline-block;background:#059669;color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:6px;text-decoration:none;">View in Supplier Portal →</a>`;
 
   await resend.emails.send({
@@ -148,14 +193,14 @@ export async function sendOutbidEmail(
 ): Promise<void> {
   const body = `
     <p style="font-size:15px;color:#374151;margin:0 0 16px;">Dear <strong>${supplierName || "Supplier"}</strong>,</p>
-    <p style="font-size:15px;color:#374151;margin:0 0 24px;">Thank you for your participation in the PEPL procurement round. Unfortunately, another supplier submitted a lower quote for the following item:</p>
+    <p style="font-size:15px;color:#374151;margin:0 0 24px;">Thank you for your participation in the PEPPL procurement round. Unfortunately, another supplier submitted a lower quote for the following item:</p>
     <div style="background:#fff7ed;border-left:4px solid #f59e0b;border-radius:4px;padding:20px;margin:0 0 24px;">
       <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.15em;color:#6b7280;text-transform:uppercase;">Item</p>
       <p style="margin:0 0 8px;font-size:18px;font-weight:800;color:#1a3a52;">${productName}</p>
       <p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:0.15em;color:#6b7280;text-transform:uppercase;">Winning Quote</p>
       <p style="margin:0;font-size:20px;font-weight:900;color:#d97706;">₹${winningPrice.toFixed(2)} / ${unit}</p>
     </div>
-    <p style="font-size:14px;color:#374151;margin:0 0 16px;">If you wish to remain competitive, you may log into the Supplier Portal and update your quote before PEPL finalises the order.</p>
+    <p style="font-size:14px;color:#374151;margin:0 0 16px;">If you wish to remain competitive, you may log into the Supplier Portal and update your quote before PEPPL finalises the order.</p>
     <a href="${process.env.NEXT_PUBLIC_BASE_URL || "https://plantengineeringpeople.com"}/supplier" style="display:inline-block;background:#d41f3d;color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:6px;text-decoration:none;">Update My Quote →</a>`;
 
   await resend.emails.send({

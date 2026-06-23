@@ -1,11 +1,11 @@
 {
-  "welcome": "Hi! I'm the PEPL support assistant. Ask a question or pick a topic below for quick answers about our services, location, and how to reach us.",
+  "welcome": "Hi! I'm the PEPPL support assistant. Ask a question or pick a topic below for quick answers about our services, location, and how to reach us.",
   "fallback": "Thanks for your message. For detailed inquiries, please call us at +91 7030-9088-11, request a quote at +91 7030-9088-12, or visit our contact page. A team member will follow up during business hours.",
   "faqs": [
     {
       "id": "services",
       "question": "What services do you offer?",
-      "answer": "PEPL provides three core services: Engineering & Design (plant layout, P&I, structural design, project management), Fabrication & Erection (industrial structures, nuclear/chemical plants, stainless and carbon steel piping), and Operations & Support (O&M, shutdown maintenance, inspection, and manpower services).",
+      "answer": "PEPPL provides three core services: Engineering & Design (plant layout, P&I, structural design, project management), Fabrication & Erection (industrial structures, nuclear/chemical plants, stainless and carbon steel piping), and Operations & Support (O&M, shutdown maintenance, inspection, and manpower services).",
       "keywords": ["service", "services", "offer", "do you do", "capabilities", "engineering", "fabrication", "maintenance", "o&m"]
     },
     {
@@ -29,13 +29,13 @@
     {
       "id": "industries",
       "question": "Which industries do you serve?",
-      "answer": "We serve Nuclear, Chemical, Energy, Oil & Gas, and broader industrial sectors. PEPL is an esteemed vendor for the Department of Atomic Energy (DAE) in India.",
+      "answer": "We serve Nuclear, Chemical, Energy, Oil & Gas, and broader industrial sectors. PEPPL is an esteemed vendor for the Department of Atomic Energy (DAE) in India.",
       "keywords": ["industry", "industries", "sector", "sectors", "nuclear", "chemical", "oil", "gas", "dae", "atomic"]
     },
     {
       "id": "projects",
       "question": "What kind of projects have you done?",
-      "answer": "PEPL has completed 209 projects including nuclear process piping, chemical plant erection, cross-country utility pipelines, and industrial structural fabrication. Visit our Projects page for examples.",
+      "answer": "PEPPL has completed 209 projects including nuclear process piping, chemical plant erection, cross-country utility pipelines, and industrial structural fabrication. Visit our Projects page for examples.",
       "keywords": ["project", "projects", "portfolio", "work", "experience", "completed", "past"]
     },
     {
@@ -46,8 +46,8 @@
     },
     {
       "id": "about",
-      "question": "Tell me about PEPL",
-      "answer": "Plant Engineering People Pvt. Ltd. (PEPL) is a professionally managed engineering company established in 1999, led by a qualified Mechanical Engineer with over 30 years of experience. We specialize in stainless steel pipe fabrication and engineering for critical industries.",
+      "question": "Tell me about PEPPL",
+      "answer": "Plant Engineering People Pvt. Ltd. (PEPPL) is a professionally managed engineering company established in 1999, led by a qualified Mechanical Engineer with over 30 years of experience. We specialize in stainless steel pipe fabrication and engineering for critical industries.",
       "keywords": ["about", "pepl", "company", "who", "history", "established", "founded"]
     }
   ]

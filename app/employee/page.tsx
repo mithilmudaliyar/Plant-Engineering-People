@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 
 type Order = {
@@ -133,7 +134,13 @@ export default function EmployeeDashboard() {
                 Procurement
               </button>
             </div>
-            <button onClick={() => { localStorage.removeItem("employee"); router.push("/"); }}
+            <Link href="/employee/news" className="px-4 py-2 text-sm font-bold rounded-lg border border-gray-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors">
+              News
+            </Link>
+            <Link href="/employee/jobs" className="px-4 py-2 text-sm font-bold rounded-lg border border-gray-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors">
+              Job Openings
+            </Link>
+            <button onClick={async () => { await fetch("/api/employee/logout", { method: "POST" }).catch(() => {}); localStorage.removeItem("employee"); router.push("/"); }}
               className="text-sm font-bold text-red-600 hover:text-red-800 transition-colors">
               Sign Out
             </button>
@@ -296,7 +303,7 @@ function OrderCard({ order, onUpdate, statusColor }: {
             <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${order.isTicket ? "bg-indigo-100 text-indigo-800" : "bg-emerald-100 text-emerald-800"}`}>
               {order.isTicket ? "Ticket" : "Order"}
             </span>
-            <span className="text-xs text-slate-500 font-mono">#PEPL-O-{order.id}</span>
+            <span className="text-xs text-slate-500 font-mono">#PEPPL-O-{order.id}</span>
           </div>
           <h3 className="text-lg font-bold text-[#1a3a52]">{order.whatNeeded}</h3>
           <div className="mt-4 grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded border border-gray-100">

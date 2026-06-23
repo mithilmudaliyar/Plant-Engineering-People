@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum ContractOrderStatus {
@@ -18,18 +19,6 @@ enum ContractOrderStatus {
   CANNOT_BE_DONE
 }
 
-model Supplier {
-  id            Int             @id @default(autoincrement())
-  name          String?
-  email         String          @unique
-  passwordHash  String
-  passwordSalt  String
-  emailVerified Boolean         @default(false)
-  createdAt     DateTime        @default(now())
-  orders        ContractOrder[]
-  quotes        SupplierQuote[]
-}
-
 model Employee {
   id                 Int      @id @default(autoincrement())
   name               String
@@ -39,13 +28,135 @@ model Employee {
   passwordHash       String
   passwordSalt       String
   mustChangePassword Boolean  @default(true)
+  // Permission to create/edit News posts and Job openings (kept flexible for
+  // later per-person gating; defaults true so existing staff keep access).
+  canManageContent   Boolean  @default(true)
   createdAt          DateTime @default(now())
+  sessions           EmployeeSession[]
+}
+
+// Server-side staff sessions (same security model as applicant Session).
+model EmployeeSession {
+  id         Int      @id @default(autoincrement())
+  tokenHash  String   @unique
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  userAgent  String?
+  ip         String?
+
+  @@index([employeeId])
+  @@index([expiresAt])
+}
+
+// ===== CAREERS / APPLICANT AUTH (password-based, server-side sessions) =====
+
+model Applicant {
+  id            Int              @id @default(autoincrement())
+  name          String
+  email         String           @unique
+  phone         String?
+  passwordHash  String
+  passwordSalt  String
+  emailVerified Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  sessions      Session[]
+  resetTokens   PasswordResetToken[]
+  applications  JobApplication[]
+  orders        ContractOrder[]
+  quotes        SupplierQuote[]
+}
+
+// Server-side sessions. The cookie holds an opaque random token; only its
+// SHA-256 hash is stored here so a DB leak cannot be used to forge sessions.
+model Session {
+  id          Int       @id @default(autoincrement())
+  tokenHash   String    @unique
+  applicantId Int
+  applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  userAgent   String?
+  ip          String?
+
+  @@index([applicantId])
+  @@index([expiresAt])
+}
+
+// Single-use password reset tokens (hash stored, not the raw token).
+model PasswordResetToken {
+  id          Int       @id @default(autoincrement())
+  tokenHash   String    @unique
+  applicantId Int
+  applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([applicantId])
+}
+
+// ===== NEWS =====
+
+model NewsPost {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  category    String   @default("Announcement")
+  excerpt     String?
+  body        String
+  imageUrl    String?
+  published   Boolean  @default(false)
+  authorName  String?
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published, publishedAt])
+}
+
+// ===== CAREERS / JOBS =====
+
+model JobOpening {
+  id             Int              @id @default(autoincrement())
+  title          String
+  department     String
+  location       String
+  employmentType String           @default("Full-time")
+  experience     String?
+  description    String
+  responsibilities String?
+  requirements   String?
+  status         String           @default("OPEN")
+  postedAt       DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  applications   JobApplication[]
+
+  @@index([status])
+}
+
+model JobApplication {
+  id          Int        @id @default(autoincrement())
+  jobId       Int
+  job         JobOpening @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applicantId Int
+  applicant   Applicant  @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  coverLetter String?
+  resumeUrl   String?
+  status      String     @default("SUBMITTED")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@unique([jobId, applicantId])
+  @@index([applicantId])
 }
 
 model ContractOrder {
   id                 Int      @id @default(autoincrement())
   supplierId         Int
-  supplier           Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplier           Applicant @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   whatNeeded         String
   dimensions         String?
   blueprintAvailable Boolean  @default(false)
@@ -115,7 +226,7 @@ model SupplierQuote {
   itemId       Int
   item         BuyOrderItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
   supplierId   Int
-  supplier     Supplier     @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplier     Applicant    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   pricePerUnit Float
   notes        String?
   status       String       @default("PENDING")

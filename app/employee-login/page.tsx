@@ -21,19 +21,26 @@ export default function EmployeeLogin() {
     setError("");
     setLoading(true);
 
-    // Hardcoded dummy employee login for demonstration
-    // In reality, this would hit an API endpoint that checks the employee table
-    setTimeout(() => {
-      if (email === "admin@pepeople.in" && password === "admin123") {
-        const employee = { id: 1, email, name: "Admin Engineer", role: "SENIOR_ENGINEER" };
-        localStorage.setItem("employee", JSON.stringify(employee));
+    try {
+      const res = await fetch("/api/employee/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Store a non-sensitive display copy; real authz is the httpOnly session cookie.
+        localStorage.setItem("employee", JSON.stringify(data.employee));
         window.dispatchEvent(new Event("employee-auth-change"));
         router.push("/employee");
       } else {
-        setError("Invalid credentials. Try admin@pepeople.in / admin123");
+        setError(data.message || "Invalid credentials.");
         setLoading(false);
       }
-    }, 1000);
+    } catch {
+      setError("An unexpected error occurred. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,7 +65,7 @@ export default function EmployeeLogin() {
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide text-[11px]">PEPL Email Address</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide text-[11px]">PEPPL Email Address</label>
                 <input
                   type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#1a3a52] focus:ring-[#1a3a52] text-sm p-2.5 border"

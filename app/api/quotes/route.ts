@@ -1,19 +1,25 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCurrentApplicant } from "@/lib/auth";
 
+// Submit/update a quote as the signed-in account. Identity from session cookie.
 export async function POST(request: Request) {
   try {
-    const { itemId, supplierId, pricePerUnit, notes } = await request.json();
+    const account = await getCurrentApplicant();
+    if (!account) {
+      return NextResponse.json({ success: false, message: "Please sign in." }, { status: 401 });
+    }
 
-    if (!itemId || !supplierId || pricePerUnit == null) {
-      return NextResponse.json({ success: false, message: "itemId, supplierId, and pricePerUnit are required." }, { status: 400 });
+    const { itemId, pricePerUnit, notes } = await request.json();
+    if (!itemId || pricePerUnit == null) {
+      return NextResponse.json({ success: false, message: "itemId and pricePerUnit are required." }, { status: 400 });
     }
 
     const quote = await prisma.supplierQuote.upsert({
-      where: { itemId_supplierId: { itemId: Number(itemId), supplierId: Number(supplierId) } },
+      where: { itemId_supplierId: { itemId: Number(itemId), supplierId: account.id } },
       create: {
         itemId: Number(itemId),
-        supplierId: Number(supplierId),
+        supplierId: account.id,
         pricePerUnit: Number(pricePerUnit),
         notes: notes || null,
         status: "PENDING",
@@ -26,40 +32,35 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, quote });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Quote submission error:", error);
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: "Internal server error." }, { status: 500 });
   }
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const supplierId = searchParams.get("supplierId");
-
-    if (!supplierId) {
-      return NextResponse.json({ success: false, message: "supplierId is required." }, { status: 400 });
+    const account = await getCurrentApplicant();
+    if (!account) {
+      return NextResponse.json({ success: false, message: "Please sign in." }, { status: 401 });
     }
 
     const quotes = await prisma.supplierQuote.findMany({
-      where: { supplierId: Number(supplierId) },
+      where: { supplierId: account.id },
       orderBy: { createdAt: "desc" },
       include: {
         item: {
           include: {
             sheet: { select: { title: true } },
-            quotes: {
-              orderBy: { pricePerUnit: "asc" },
-              take: 1,
-              select: { pricePerUnit: true },
-            },
+            quotes: { orderBy: { pricePerUnit: "asc" }, take: 1, select: { pricePerUnit: true } },
           },
         },
       },
     });
 
     return NextResponse.json({ success: true, quotes });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("Fetch quotes error:", error);
+    return NextResponse.json({ success: false, message: "Internal server error." }, { status: 500 });
   }
 }

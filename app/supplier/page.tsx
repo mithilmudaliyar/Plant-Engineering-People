@@ -54,13 +54,16 @@ export default function SupplierDashboard() {
   const [orderMsg, setOrderMsg] = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem("supplier");
-    if (!saved) { router.push("/supplier-login"); return; }
-    const s = JSON.parse(saved);
-    setSupplier(s);
-    fetchOrders(s.id);
-    fetchMarket();
-    fetchMyQuotes(s.id);
+    (async () => {
+      // Identity comes from the secure unified-account session cookie.
+      const res = await fetch("/api/careers/me");
+      const data = await res.json();
+      if (!data.authenticated) { router.push("/login"); return; }
+      setSupplier(data.applicant);
+      fetchOrders(data.applicant.id);
+      fetchMarket();
+      fetchMyQuotes(data.applicant.id);
+    })();
   }, [router]);
 
   const fetchOrders = async (id: number) => {
@@ -153,7 +156,7 @@ export default function SupplierDashboard() {
                 </button>
               ))}
             </div>
-            <button onClick={() => { localStorage.removeItem("supplier"); router.push("/"); }}
+            <button onClick={async () => { await fetch("/api/careers/logout", { method: "POST" }).catch(() => {}); window.dispatchEvent(new Event("account-auth-change")); router.push("/"); }}
               className="text-sm font-bold text-red-600 hover:text-red-800">Sign Out</button>
           </div>
         </div>
@@ -213,7 +216,7 @@ export default function SupplierDashboard() {
                           <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${order.isTicket ? "bg-indigo-100 text-indigo-800" : "bg-emerald-100 text-emerald-800"}`}>
                             {order.isTicket ? "Ticket" : "Order"}
                           </span>
-                          <span className="text-xs text-slate-500 font-mono">#PEPL-O-{order.id}</span>
+                          <span className="text-xs text-slate-500 font-mono">#PEPPL-O-{order.id}</span>
                         </div>
                         <p className="font-bold text-[#1a3a52]">{order.whatNeeded}</p>
                         {order.employeeNotes && (
@@ -239,7 +242,7 @@ export default function SupplierDashboard() {
           <div className="max-w-5xl">
             <div className="mb-6">
               <h2 className="text-xl font-black text-[#1a3a52]">Market Board</h2>
-              <p className="text-sm text-slate-500 mt-1">Open procurement rounds from PEPL. Submit your best price to win the order.</p>
+              <p className="text-sm text-slate-500 mt-1">Open procurement rounds from PEPPL. Submit your best price to win the order.</p>
             </div>
             {sheets.length === 0 ? (
               <p className="text-center py-12 text-slate-500 surface">No open procurement rounds at the moment. Check back soon!</p>

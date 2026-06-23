@@ -1,16 +1,16 @@
 {
   "company": {
     "name": "Plant Engineering People Pvt. Ltd.",
-    "shortName": "PEPL",
+    "shortName": "PEPPL",
     "tagline": "Nuclear and Chemical Engineering Experts",
     "founded": 1999,
     "description": "A professionally managed engineering company dedicated to serve the Nuclear, Chemical, Energy, Oil, and Gas industries."
   },
   "about": {
-    "intro": "Welcome to PEPL, a professionally managed engineering company dedicated to serve the Nuclear, Chemical, Energy, Oil, and Gas industries. Our team is led by a qualified Mechanical Engineer with over thirty years of industry experience. At PEPL, we pride ourselves on having skilled and knowledgeable members drawn from reputable institutions, who bring decades of expertise in their respective fields.",
+    "intro": "Welcome to PEPPL, a professionally managed engineering company dedicated to serve the Nuclear, Chemical, Energy, Oil, and Gas industries. Our team is led by a qualified Mechanical Engineer with over thirty years of industry experience. At PEPPL, we pride ourselves on having skilled and knowledgeable members drawn from reputable institutions, who bring decades of expertise in their respective fields.",
     "evolution": "What began as a service-oriented company focused on Small and Medium Chemical industries has evolved into a multi-discipline engineering powerhouse. Over the years, we have expanded our capabilities, allowing us to transform innovative ideas into tangible realities. Our commitment to excellence drives us to continuously adapt and grow, ensuring we meet the diverse needs of our clients across various sectors.",
-    "dae": "PEPL is a highly esteemed vendor for the Department of Atomic Energy in India, specializing in all works associated with Nuclear fuel management. Our expertise encompasses equipments and services required for fuel fabrication, power generation, fuel reprocessing, and waste management activities. With a commitment to excellence and safety, we play a crucial role in supporting India's nuclear energy initiatives.",
-    "closing": "Trust PEPL for reliable and innovative solutions in nuclear fuel management as we believe in turning visions into successful projects through expert engineering solutions."
+    "dae": "PEPPL is a highly esteemed vendor for the Department of Atomic Energy in India, specializing in all works associated with Nuclear fuel management. Our expertise encompasses equipments and services required for fuel fabrication, power generation, fuel reprocessing, and waste management activities. With a commitment to excellence and safety, we play a crucial role in supporting India's nuclear energy initiatives.",
+    "closing": "Trust PEPPL for reliable and innovative solutions in nuclear fuel management as we believe in turning visions into successful projects through expert engineering solutions."
   },
   "services": [
     {
@@ -143,6 +143,14 @@
     {
       "label": "Clients",
       "href": "/clients"
+    },
+    {
+      "label": "News",
+      "href": "/news"
+    },
+    {
+      "label": "Careers",
+      "href": "/careers"
     },
     {
       "label": "Contact",
