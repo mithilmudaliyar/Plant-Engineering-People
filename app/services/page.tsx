@@ -28,7 +28,7 @@ const services = [
     title: "Heavy Fabrication",
     desc: "Precision MS and SS fabrication for pressure vessels, heat exchangers, storage tanks, and special-purpose process equipment at our 5,000+ MT capacity facility.",
     bullets: [
-      "Pressure vessels — ASME Section VIII Div. 1",
+      "Pressure vessels - ASME Section VIII Div. 1",
       "Shell and tube heat exchangers",
       "Storage tanks (API 650 compliant)",
       "Special-purpose machinery for food and pharma",

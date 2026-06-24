@@ -14,7 +14,7 @@ export function HomeContact() {
               <p className="section-label">Get in Touch</p>
               <h2 className="mt-3 text-3xl font-black text-[#0C1B33] sm:text-4xl">Contact Us</h2>
               <p className="mt-2 text-base text-slate-500">
-                Send us an inquiry or call directly — we respond within one business day.
+                Send us an inquiry or call directly - we respond within one business day.
               </p>
             </div>
           </ScrollReveal>
@@ -29,7 +29,7 @@ export function HomeContact() {
                   <p className="text-sm text-slate-500 mt-1 leading-relaxed">
                     {site.contact.address.line1},<br />
                     {site.contact.address.line2},<br />
-                    {site.contact.address.state} — {site.contact.address.pin}
+                    {site.contact.address.state} - {site.contact.address.pin}
                   </p>
                 </div>
 

@@ -13,7 +13,7 @@ const pillars = [
       </svg>
     ),
     title: "Engineering & Design",
-    summary: "From concept to construction-ready drawings — P&ID layout, structural design, seismic qualification, and material selection.",
+    summary: "From concept to construction-ready drawings - P&ID layout, structural design, seismic qualification, and material selection.",
     bullets: [
       "P&I layout and plant layout design",
       "Structural and support design & drafting",
@@ -32,7 +32,7 @@ const pillars = [
     title: "Fabrication & Erection",
     summary: "5,000+ MT annual capacity for pressure vessels, piping systems, structural steelwork, and turnkey plant erection across nuclear and chemical sectors.",
     bullets: [
-      "Pressure vessels — ASME Section VIII Div. 1",
+      "Pressure vessels - ASME Section VIII Div. 1",
       "IBR & non-IBR piping in SS, CS, and DI",
       "Industrial structures and support steelwork",
       "Chemical and nuclear plant EPC erection",
@@ -61,7 +61,7 @@ const pillars = [
 const extras = [
   {
     title: "Nuclear Piping",
-    desc: "DAE-compliant process piping networks for nuclear fuel management and power plant facilities — fabricated and erected under strict AERB protocols.",
+    desc: "DAE-compliant process piping networks for nuclear fuel management and power plant facilities - fabricated and erected under strict AERB protocols.",
     tag: "DAE / AERB",
   },
   {
