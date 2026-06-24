@@ -2,9 +2,13 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ContractOrderStatus } from "@prisma/client";
 import { sendOrderUpdateEmail } from "@/lib/email";
+import { requireContentManagerSession } from "@/lib/employeeAuth";
 
 export async function GET() {
   try {
+    const guard = await requireContentManagerSession();
+    if (!guard.ok) return NextResponse.json({ success: false, message: guard.message }, { status: guard.status });
+
     const orders = await prisma.contractOrder.findMany({
       include: {
         supplier: {
@@ -24,6 +28,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const guard = await requireContentManagerSession();
+  if (!guard.ok) return NextResponse.json({ success: false, message: guard.message }, { status: guard.status });
+
   const body = await request.json().catch(() => null);
 
   if (!body || typeof body !== "object") {

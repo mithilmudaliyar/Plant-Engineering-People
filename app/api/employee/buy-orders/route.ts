@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import * as XLSX from "xlsx";
+import { requireContentManagerSession } from "@/lib/employeeAuth";
 
 export async function POST(request: Request) {
   try {
+    const guard = await requireContentManagerSession();
+    if (!guard.ok) return NextResponse.json({ success: false, message: guard.message }, { status: guard.status });
+
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const title = formData.get("title") as string;
@@ -53,6 +57,9 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+    const guard = await requireContentManagerSession();
+    if (!guard.ok) return NextResponse.json({ success: false, message: guard.message }, { status: guard.status });
+
     const sheets = await prisma.buyOrderSheet.findMany({
       orderBy: { createdAt: "desc" },
       include: {

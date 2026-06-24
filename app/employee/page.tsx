@@ -29,7 +29,7 @@ type BuyOrderSheet = {
 const STATUS_COLOR: Record<string, string> = {
   PENDING: "bg-amber-100 text-amber-800", IN_PROGRESS: "bg-blue-100 text-blue-800",
   APPROVED: "bg-emerald-100 text-emerald-800", COMPLETED: "bg-indigo-100 text-indigo-800",
-  REJECTED: "bg-red-100 text-red-800", CANCELLED: "bg-gray-100 text-gray-600",
+  REJECTED: "bg-red-100 text-red-800", CANCELLED: "bg-slate-500 text-white",
   FORWARDED_TO_SENIOR: "bg-purple-100 text-purple-800", CANNOT_BE_DONE: "bg-rose-100 text-rose-800",
 };
 
@@ -134,6 +134,9 @@ export default function EmployeeDashboard() {
                 Procurement
               </button>
             </div>
+            <Link href="/employee/inquiries" className="px-4 py-2 text-sm font-bold rounded-lg border border-gray-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors">
+              Inquiries
+            </Link>
             <Link href="/employee/news" className="px-4 py-2 text-sm font-bold rounded-lg border border-gray-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors">
               News
             </Link>
@@ -296,7 +299,7 @@ function OrderCard({ order, onUpdate, statusColor }: {
   const [updating, setUpdating] = useState(false);
 
   return (
-    <div className="surface p-6 border-l-4 border-l-[#1a3a52]">
+    <div className="surface p-6">
       <div className="flex flex-col md:flex-row justify-between gap-6">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">

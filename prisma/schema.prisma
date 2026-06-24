@@ -191,11 +191,11 @@ model OtpCode {
 
 model ContactInquiry {
   id        Int      @id @default(autoincrement())
-  firstName String
-  lastName  String
+  name      String
+  company   String?
   email     String
-  subject   String
   message   String
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
 

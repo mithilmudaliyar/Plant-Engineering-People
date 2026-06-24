@@ -1,10 +1,43 @@
 "use client";
 
+import { useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { site } from "@/lib/site";
 
 export function HomeContact() {
+  const [form, setForm] = useState({ name: "", company: "", email: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [feedback, setFeedback] = useState("");
+
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("loading");
+    setFeedback("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus("success");
+        setFeedback(data.message);
+        setForm({ name: "", company: "", email: "", message: "" });
+      } else {
+        setStatus("error");
+        setFeedback(data.message || "Something went wrong. Please try again.");
+      }
+    } catch {
+      setStatus("error");
+      setFeedback("Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <section id="contact" className="bg-slate-50 py-24 border-t border-slate-100">
       <Container>
@@ -61,49 +94,79 @@ export function HomeContact() {
             <ScrollReveal direction="right">
               <div className="surface p-8">
                 <h3 className="text-xl font-black text-[#0C1B33] mb-6">Send an Inquiry</h3>
-                <form className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+
+                {status === "success" ? (
+                  <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center">
+                    <svg className="w-10 h-10 text-green-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-sm font-semibold text-green-800">{feedback}</p>
+                    <button onClick={() => setStatus("idle")} className="mt-4 text-xs font-bold text-green-700 hover:underline">
+                      Send another inquiry
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {status === "error" && (
+                      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{feedback}</div>
+                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">Name *</label>
+                        <input
+                          type="text"
+                          required
+                          value={form.name}
+                          onChange={set("name")}
+                          className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#d41f3d] focus:ring-1 focus:ring-[#d41f3d] outline-none transition-colors"
+                          placeholder="Your name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">Company</label>
+                        <input
+                          type="text"
+                          value={form.company}
+                          onChange={set("company")}
+                          className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#d41f3d] focus:ring-1 focus:ring-[#d41f3d] outline-none transition-colors"
+                          placeholder="Company name"
+                        />
+                      </div>
+                    </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">Name</label>
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">Email *</label>
                       <input
-                        type="text"
+                        type="email"
+                        required
+                        value={form.email}
+                        onChange={set("email")}
                         className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#d41f3d] focus:ring-1 focus:ring-[#d41f3d] outline-none transition-colors"
-                        placeholder="Your name"
+                        placeholder="you@company.com"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">Company</label>
-                      <input
-                        type="text"
-                        className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#d41f3d] focus:ring-1 focus:ring-[#d41f3d] outline-none transition-colors"
-                        placeholder="Company name"
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">Message *</label>
+                      <textarea
+                        rows={4}
+                        required
+                        value={form.message}
+                        onChange={set("message")}
+                        className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#d41f3d] focus:ring-1 focus:ring-[#d41f3d] outline-none transition-colors resize-none"
+                        placeholder="Describe your project or requirement..."
                       />
                     </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">Email</label>
-                    <input
-                      type="email"
-                      className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#d41f3d] focus:ring-1 focus:ring-[#d41f3d] outline-none transition-colors"
-                      placeholder="you@company.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">Message</label>
-                    <textarea
-                      rows={4}
-                      className="w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#d41f3d] focus:ring-1 focus:ring-[#d41f3d] outline-none transition-colors resize-none"
-                      placeholder="Describe your project or requirement…"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#d41f3d] px-6 py-3 text-sm font-bold text-white hover:bg-[#b01830] transition-colors cursor-pointer"
-                  >
-                    Submit Inquiry
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                  </button>
-                </form>
+                    <button
+                      type="submit"
+                      disabled={status === "loading"}
+                      className="inline-flex items-center gap-2 rounded-xl bg-[#d41f3d] px-6 py-3 text-sm font-bold text-white hover:bg-[#b01830] disabled:opacity-60 transition-colors cursor-pointer"
+                    >
+                      {status === "loading" ? "Sending..." : "Submit Inquiry"}
+                      {status !== "loading" && (
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                      )}
+                    </button>
+                  </form>
+                )}
               </div>
             </ScrollReveal>
           </div>
