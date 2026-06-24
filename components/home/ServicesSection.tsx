@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ui/ScrollReveal";
@@ -58,26 +55,7 @@ const pillars = [
   },
 ];
 
-const extras = [
-  {
-    title: "Nuclear Piping",
-    desc: "DAE-compliant process piping networks for nuclear fuel management and power plant facilities - fabricated and erected under strict AERB protocols.",
-    tag: "DAE / AERB",
-  },
-  {
-    title: "Quality & NDT",
-    desc: "Non-destructive testing including radiographic testing (RT), ultrasonic testing (UT), magnetic particle inspection, and hydrostatic proof testing.",
-    tag: "ISNT Certified",
-  },
-  {
-    title: "Cross-Country Pipelines",
-    desc: "Long-distance pipeline laying for water supply, compressed gas distribution, and utility infrastructure across industrial zones.",
-    tag: "Civil & Mechanical",
-  },
-];
-
 export function ServicesSection() {
-  const [expanded, setExpanded] = useState(false);
 
   return (
     <section id="services" className="bg-white py-24 border-t border-slate-100">
@@ -128,38 +106,17 @@ export function ServicesSection() {
           ))}
         </StaggerContainer>
 
-        {/* Expandable additional services */}
-        <div
-          className="overflow-hidden transition-all duration-500 ease-in-out"
-          style={{ maxHeight: expanded ? "600px" : "0px", opacity: expanded ? 1 : 0 }}
-        >
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {extras.map((e) => (
-              <div key={e.title} className="rounded-xl border border-slate-200 bg-slate-50 p-6">
-                <div className="mb-1 inline-flex items-center rounded-full bg-white border border-slate-200 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  {e.tag}
-                </div>
-                <h4 className="mt-3 text-base font-black text-[#0C1B33]">{e.title}</h4>
-                <p className="mt-2 text-xs text-slate-500 leading-relaxed">{e.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <ScrollReveal>
           <div className="mt-8 flex items-center gap-4">
-            <button
-              onClick={() => setExpanded((v) => !v)}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-bold text-slate-700 hover:border-[#0C1B33] hover:text-[#0C1B33] transition-colors cursor-pointer"
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-bold text-slate-700 hover:border-[#0C1B33] hover:text-[#0C1B33] transition-colors"
             >
-              {expanded ? "Show less" : "More services"}
-              <svg
-                className={`w-4 h-4 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              More services
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </button>
+            </Link>
             <Link
               href="/#contact"
               className="inline-flex items-center gap-2 rounded-xl bg-[#d41f3d] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#b01830] transition-colors"

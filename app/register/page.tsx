@@ -20,7 +20,9 @@ function RegisterInner() {
   const [resetSignal, setResetSignal] = useState(0);
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -88,6 +90,43 @@ function RegisterInner() {
     }
   };
 
+  const handleResend = async () => {
+    setError("");
+    setSuccess("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/careers/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSuccess("A new code has been sent to your email.");
+        setResendCooldown(60);
+        const interval = setInterval(() => {
+          setResendCooldown((s) => {
+            if (s <= 1) { clearInterval(interval); return 0; }
+            return s - 1;
+          });
+        }, 1000);
+      } else {
+        setError(data.message || "Could not resend code.");
+      }
+    } catch {
+      setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangeEmail = () => {
+    setStep(1);
+    setCode("");
+    setError("");
+    setSuccess("");
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center py-12">
       <Container>
@@ -106,6 +145,9 @@ function RegisterInner() {
           <div className="p-6 sm:p-8">
             {error && (
               <div className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+            )}
+            {success && (
+              <div className="mb-5 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{success}</div>
             )}
 
             {step === 1 ? (
@@ -149,7 +191,7 @@ function RegisterInner() {
             ) : (
               <form onSubmit={submitVerify} className="space-y-5">
                 <p className="text-sm text-slate-600">
-                  We sent a 6-digit verification code to <strong className="text-[#1a3a52]">{form.email}</strong>. Enter it below to activate your account. This one-time step verifies your email — afterwards you&apos;ll sign in with your password.
+                  We sent a 6-digit code to <strong className="text-[#1a3a52]">{form.email}</strong>. Enter it below to activate your account.
                 </p>
                 <input
                   value={code}
@@ -165,6 +207,23 @@ function RegisterInner() {
                 >
                   {loading ? "Verifying…" : "Verify & Continue"}
                 </button>
+                <div className="flex items-center justify-between pt-1 text-sm">
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={loading || resendCooldown > 0}
+                    className="text-[#1a3a52] font-semibold hover:underline disabled:opacity-40 disabled:no-underline"
+                  >
+                    {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : "Resend code"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleChangeEmail}
+                    className="text-slate-500 hover:text-[#d41f3d] hover:underline"
+                  >
+                    Wrong email?
+                  </button>
+                </div>
               </form>
             )}
           </div>
