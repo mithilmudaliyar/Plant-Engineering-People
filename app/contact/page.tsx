@@ -2,11 +2,11 @@ import { Container } from "@/components/ui/Container";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-slate-50 pt-32 pb-20">
+    <div className="min-h-screen bg-slate-50 pt-32 pb-24">
       <Container>
         <div className="max-w-5xl mx-auto">
           <div className="inline-flex items-center gap-2 mb-6">
-            <span className="h-px w-6 bg-amber-500" />
+            <span className="h-px w-6 bg-[#d41f3d]" />
             <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#d41f3d]">Reach Out</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-[#1a3a52] mb-12">Contact Us</h1>
@@ -47,7 +47,7 @@ export default function ContactPage() {
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Message</label>
                   <textarea rows={4} className="w-full rounded border border-gray-300 p-2.5 text-sm focus:border-[#1a3a52] focus:ring-1 focus:ring-[#1a3a52] outline-none"></textarea>
                 </div>
-                <button type="button" className="bg-[#1a3a52] text-white px-6 py-3 rounded text-sm font-bold hover:bg-[#0f1f2e] transition-colors">
+                <button type="button" className="bg-[#d41f3d] text-white px-6 py-3 rounded text-sm font-bold hover:bg-[#b01830] transition-colors">
                   Submit Inquiry
                 </button>
               </form>

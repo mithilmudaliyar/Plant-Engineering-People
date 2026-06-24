@@ -130,15 +130,15 @@
   "navigation": [
     {
       "label": "About",
-      "href": "/about"
+      "href": "/#about"
     },
     {
       "label": "Services",
-      "href": "/services"
+      "href": "/#services"
     },
     {
       "label": "Projects",
-      "href": "/projects"
+      "href": "/#projects"
     },
     {
       "label": "Clients",
@@ -154,7 +154,7 @@
     },
     {
       "label": "Contact",
-      "href": "/contact"
+      "href": "/#contact"
     }
   ]
 }

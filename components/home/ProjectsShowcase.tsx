@@ -27,7 +27,7 @@ export function ProjectsShowcase() {
   const featuredColors = sectorColors[featured.sector] || sectorColors.Industrial;
 
   return (
-    <section className="bg-slate-50 border-t border-slate-200 py-20">
+    <section id="projects" className="bg-slate-50 py-24">
       <Container>
         <ScrollReveal>
           <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
@@ -38,7 +38,7 @@ export function ProjectsShowcase() {
               </h2>
               <p className="mt-2 text-base text-slate-500">Representative work across nuclear, chemical, and industrial sectors.</p>
             </div>
-            <Link href="/projects" className="inline-flex items-center gap-2 text-sm font-bold text-[#0C1B33] hover:text-orange-500 transition-colors whitespace-nowrap cursor-pointer">
+            <Link href="/projects" className="inline-flex items-center gap-2 text-sm font-bold text-[#0C1B33] hover:text-[#d41f3d] transition-colors whitespace-nowrap cursor-pointer">
               View all projects
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </Link>

@@ -52,10 +52,10 @@ export default function SupplierDashboard() {
   const [newOrder, setNewOrder] = useState({ whatNeeded: "", dimensions: "", briefDetails: "", blueprintAvailable: false, isTicket: false });
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [orderMsg, setOrderMsg] = useState("");
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
   useEffect(() => {
     (async () => {
-      // Identity comes from the secure unified-account session cookie.
       const res = await fetch("/api/careers/me");
       const data = await res.json();
       if (!data.authenticated) { router.push("/login"); return; }
@@ -121,23 +121,72 @@ export default function SupplierDashboard() {
       });
       const data = await res.json();
       if (data.success) {
-        setOrderMsg("✅ Order submitted successfully!");
+        setOrderSuccess(true);
+        setOrderMsg("Order submitted successfully.");
         setNewOrder({ whatNeeded: "", dimensions: "", briefDetails: "", blueprintAvailable: false, isTicket: false });
         fetchOrders(supplier.id);
-      } else { setOrderMsg("❌ " + data.message); }
-    } catch { setOrderMsg("❌ Failed to submit."); } finally { setSubmittingOrder(false); }
+      } else {
+        setOrderSuccess(false);
+        setOrderMsg(data.message || "Failed to submit.");
+      }
+    } catch {
+      setOrderSuccess(false);
+      setOrderMsg("Failed to submit. Please try again.");
+    } finally { setSubmittingOrder(false); }
   };
 
   if (!supplier) return null;
 
   const tabs = [
     { key: "orders", label: "My Orders" },
-    { key: "market", label: "🏪 Market Board" },
+    { key: "market", label: "Market Board" },
     { key: "bids", label: "My Bids" },
   ];
 
   return (
     <div className="min-h-screen bg-slate-50 py-10">
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0);    }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        .market-sheet {
+          animation: fadeUp 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .market-item {
+          animation: fadeIn 0.28s ease both;
+        }
+        .market-item + .market-item {
+          border-top: 1px solid #f1f5f9;
+        }
+        .quote-submit-btn {
+          transition: background-color 0.15s ease, transform 0.12s ease;
+        }
+        .quote-submit-btn:hover:not(:disabled) {
+          background-color: #b01830;
+          transform: translateY(-1px);
+        }
+        .quote-submit-btn:active:not(:disabled) {
+          transform: translateY(0);
+        }
+        .price-field {
+          transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .price-field:focus {
+          border-color: #1a3a52;
+          box-shadow: 0 0 0 3px rgba(26, 58, 82, 0.07);
+          outline: none;
+        }
+        .note-field:focus {
+          border-color: #1a3a52;
+          outline: none;
+        }
+      `}</style>
+
       <Container>
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 border-b border-gray-200 pb-6">
           <div>
@@ -164,10 +213,13 @@ export default function SupplierDashboard() {
         {/* MY ORDERS TAB */}
         {activeTab === "orders" && (
           <div className="max-w-5xl space-y-6">
-            {/* Submit Order Form */}
             <div className="surface p-6 md:p-8">
               <h2 className="text-xl font-black text-[#1a3a52] mb-6">Submit a New Order / Consultation</h2>
-              {orderMsg && <p className={`mb-4 text-sm font-semibold p-3 rounded ${orderMsg.startsWith("✅") ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}>{orderMsg}</p>}
+              {orderMsg && (
+                <p className={`mb-4 text-sm font-semibold p-3 rounded ${orderSuccess ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}>
+                  {orderMsg}
+                </p>
+              )}
               <form onSubmit={submitOrder} className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">What is needed? *</label>
@@ -203,13 +255,12 @@ export default function SupplierDashboard() {
               </form>
             </div>
 
-            {/* Order History */}
             <div>
               <h2 className="text-xl font-black text-[#1a3a52] mb-4">Order History</h2>
               {loading ? <p className="text-slate-400 text-center py-8">Loading...</p> :
                 orders.length === 0 ? <p className="text-slate-500 text-center py-8 surface">No orders submitted yet.</p> :
                 orders.map(order => (
-                  <div key={order.id} className="surface p-5 mb-3 border-l-4 border-l-[#1a3a52]">
+                  <div key={order.id} className="surface p-5 mb-3 border-t-2 border-t-[#1a3a52]">
                     <div className="flex flex-wrap justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -240,80 +291,118 @@ export default function SupplierDashboard() {
         {/* MARKET BOARD TAB */}
         {activeTab === "market" && (
           <div className="max-w-5xl">
-            <div className="mb-6">
+            <div className="mb-8">
               <h2 className="text-xl font-black text-[#1a3a52]">Market Board</h2>
-              <p className="text-sm text-slate-500 mt-1">Open procurement rounds from PEPPL. Submit your best price to win the order.</p>
+              <p className="text-sm text-slate-500 mt-1">Active procurement rounds from PEPPL. Submit your most competitive price to win the order.</p>
             </div>
+
             {sheets.length === 0 ? (
-              <p className="text-center py-12 text-slate-500 surface">No open procurement rounds at the moment. Check back soon!</p>
+              <div className="surface py-16 text-center" style={{ animation: "fadeIn 0.3s ease both" }}>
+                <p className="text-sm font-medium text-slate-400">No active procurement rounds.</p>
+                <p className="text-sm text-slate-400 mt-1">New opportunities will appear here when published.</p>
+              </div>
             ) : (
-              sheets.map(sheet => (
-                <div key={sheet.id} className="surface mb-6 overflow-hidden">
-                  <div className="bg-[#1a3a52] px-6 py-4 text-white flex justify-between items-start">
-                    <div>
-                      <p className="font-bold text-lg">{sheet.title}</p>
-                      {sheet.description && <p className="text-sm text-slate-300 mt-0.5">{sheet.description}</p>}
+              sheets.map((sheet, si) => (
+                <div
+                  key={sheet.id}
+                  className="market-sheet surface mb-5 overflow-hidden border border-slate-200"
+                  style={{ animationDelay: `${si * 75}ms` }}
+                >
+                  {/* Sheet header */}
+                  <div className="bg-[#1a3a52] px-6 py-4">
+                    <div className="flex justify-between items-start gap-4">
+                      <div>
+                        <p className="font-bold text-white text-base leading-tight">{sheet.title}</p>
+                        {sheet.description && (
+                          <p className="text-slate-300 text-sm mt-1 leading-snug">{sheet.description}</p>
+                        )}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-slate-300 text-xs">
+                          {new Date(sheet.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                        </p>
+                        <p className="text-slate-500 text-xs mt-0.5">
+                          {sheet.items.length} {sheet.items.length === 1 ? "item" : "items"}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-slate-300">{new Date(sheet.createdAt).toLocaleDateString()}</p>
                   </div>
-                  <div className="divide-y divide-gray-100">
-                    {sheet.items.map(item => {
-                      const bestQuote = item.quotes[0];
-                      const input = quoteInputs[item.id] || { price: "", notes: "" };
-                      return (
-                        <div key={item.id} className="p-6">
-                          <div className="flex flex-wrap gap-4 justify-between mb-4">
-                            <div>
-                              <h3 className="font-bold text-[#1a3a52] text-base">{item.productName}</h3>
-                              <p className="text-xs text-slate-500 mt-0.5">
-                                Required: <strong>{item.quantity} {item.unit}</strong>
-                                {item.specification && <> · Spec: <strong>{item.specification}</strong></>}
-                              </p>
+
+                  {/* Line items */}
+                  {sheet.items.map((item, ii) => {
+                    const bestQuote = item.quotes[0];
+                    const input = quoteInputs[item.id] || { price: "", notes: "" };
+                    return (
+                      <div
+                        key={item.id}
+                        className="market-item px-6 py-5"
+                        style={{ animationDelay: `${si * 75 + (ii + 1) * 55}ms` }}
+                      >
+                        {/* Product info + current best */}
+                        <div className="flex flex-wrap gap-4 justify-between items-start mb-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-[#1a3a52] text-base leading-snug">{item.productName}</h3>
+                            <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1.5">
+                              <span className="text-xs text-slate-500">
+                                Qty: <span className="font-semibold text-slate-700">{item.quantity} {item.unit}</span>
+                              </span>
+                              {item.specification && (
+                                <span className="text-xs text-slate-500">
+                                  Spec: <span className="font-semibold text-slate-700">{item.specification}</span>
+                                </span>
+                              )}
                             </div>
-                            {/* Current Best Quote Badge */}
+                          </div>
+
+                          {/* Current best — clean metric display, no badge box */}
+                          <div className="text-right shrink-0">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Current Best</p>
                             {bestQuote ? (
-                              <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2">
-                                <span className="text-amber-500 text-lg">🏆</span>
-                                <div>
-                                  <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Current Best</p>
-                                  <p className="text-lg font-black text-amber-800">₹{bestQuote.pricePerUnit.toFixed(2)}<span className="text-xs font-medium">/{item.unit}</span></p>
-                                </div>
-                              </div>
+                              <p className="font-mono text-xl font-bold text-[#1a3a52] leading-none tabular-nums">
+                                ₹{bestQuote.pricePerUnit.toFixed(2)}
+                                <span className="text-xs font-normal text-slate-400 ml-1">/{item.unit}</span>
+                              </p>
                             ) : (
-                              <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
-                                <span className="text-blue-400 text-lg">⭐</span>
-                                <div>
-                                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">No Quotes Yet</p>
-                                  <p className="text-sm font-bold text-blue-800">Be the first to bid!</p>
-                                </div>
-                              </div>
+                              <p className="font-mono text-xl font-medium text-slate-300 leading-none select-none">—</p>
                             )}
                           </div>
-                          {/* Quote Input */}
-                          <div className="flex flex-wrap gap-3 items-end bg-slate-50 p-4 rounded-lg border border-gray-100">
-                            <div>
-                              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">Your Price (₹ per {item.unit})</label>
-                              <input type="number" step="0.01" min="0" value={input.price}
-                                onChange={e => setQuoteInputs(prev => ({ ...prev, [item.id]: { ...prev[item.id] || { notes: "" }, price: e.target.value } }))}
-                                placeholder="Enter your price"
-                                className="w-40 rounded border border-gray-300 p-2 text-sm font-bold outline-none focus:border-[#1a3a52]" />
-                            </div>
-                            <div className="flex-1 min-w-[180px]">
-                              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">Note (Optional)</label>
-                              <input type="text" value={input.notes}
-                                onChange={e => setQuoteInputs(prev => ({ ...prev, [item.id]: { ...prev[item.id] || { price: "" }, notes: e.target.value } }))}
-                                placeholder="Delivery time, brand, etc."
-                                className="w-full rounded border border-gray-300 p-2 text-sm outline-none focus:border-[#1a3a52]" />
-                            </div>
-                            <button onClick={() => submitQuote(item.id)} disabled={submitting === item.id}
-                              className="bg-[#d41f3d] text-white px-5 py-2 rounded text-sm font-bold hover:bg-red-700 disabled:opacity-50 transition-colors whitespace-nowrap">
-                              {submitting === item.id ? "Submitting..." : "Submit Quote"}
-                            </button>
-                          </div>
                         </div>
-                      );
-                    })}
-                  </div>
+
+                        {/* Quote form */}
+                        <div className="flex flex-wrap gap-3 items-end pt-4 border-t border-slate-100">
+                          <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
+                              Your Price (₹ per {item.unit})
+                            </label>
+                            <input
+                              type="number" step="0.01" min="0" value={input.price}
+                              onChange={e => setQuoteInputs(prev => ({ ...prev, [item.id]: { ...prev[item.id] || { notes: "" }, price: e.target.value } }))}
+                              placeholder="0.00"
+                              className="price-field w-36 rounded border border-gray-200 px-3 py-2 text-sm font-bold"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-[180px]">
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
+                              Note (Optional)
+                            </label>
+                            <input
+                              type="text" value={input.notes}
+                              onChange={e => setQuoteInputs(prev => ({ ...prev, [item.id]: { ...prev[item.id] || { price: "" }, notes: e.target.value } }))}
+                              placeholder="Lead time, brand, conditions, etc."
+                              className="note-field w-full rounded border border-gray-200 px-3 py-2 text-sm transition-colors"
+                            />
+                          </div>
+                          <button
+                            onClick={() => submitQuote(item.id)}
+                            disabled={submitting === item.id}
+                            className="quote-submit-btn bg-[#d41f3d] text-white px-5 py-2 rounded text-sm font-bold disabled:opacity-50 whitespace-nowrap"
+                          >
+                            {submitting === item.id ? "Submitting..." : "Submit Quote"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ))
             )}
@@ -328,14 +417,14 @@ export default function SupplierDashboard() {
               <p className="text-sm text-slate-500 mt-1">All quotes you have submitted. You can update a Pending quote by re-submitting from the Market Board.</p>
             </div>
             {myQuotes.length === 0 ? (
-              <p className="text-center py-12 text-slate-500 surface">You haven't submitted any quotes yet. Visit the Market Board to get started!</p>
+              <p className="text-center py-12 text-slate-500 surface">You haven't submitted any quotes yet. Visit the Market Board to get started.</p>
             ) : (
               <div className="space-y-3">
                 {myQuotes.map(q => {
                   const bestPrice = q.item.quotes[0]?.pricePerUnit;
                   const isLeading = bestPrice != null && q.pricePerUnit <= bestPrice;
                   return (
-                    <div key={q.id} className={`surface p-5 border-l-4 ${q.status === "CONFIRMED" ? "border-l-emerald-500" : q.status === "OUTBID" ? "border-l-red-400" : isLeading ? "border-l-amber-400" : "border-l-slate-300"}`}>
+                    <div key={q.id} className={`surface p-5 border-t-2 ${q.status === "CONFIRMED" ? "border-t-emerald-500" : q.status === "OUTBID" ? "border-t-red-400" : isLeading ? "border-t-amber-400" : "border-t-slate-200"}`}>
                       <div className="flex flex-wrap justify-between gap-3">
                         <div className="flex-1">
                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{q.item.sheet.title}</p>
@@ -344,7 +433,10 @@ export default function SupplierDashboard() {
                           {q.notes && <p className="text-xs text-slate-500 italic mt-1">"{q.notes}"</p>}
                         </div>
                         <div className="text-right">
-                          <p className="text-2xl font-black text-[#1a3a52]">₹{q.pricePerUnit.toFixed(2)}<span className="text-xs font-medium text-slate-400">/{q.item.unit}</span></p>
+                          <p className="text-2xl font-black text-[#1a3a52] font-mono tabular-nums">
+                            ₹{q.pricePerUnit.toFixed(2)}
+                            <span className="text-xs font-medium text-slate-400 font-sans">/{q.item.unit}</span>
+                          </p>
                           <span className={`inline-block mt-1 text-[10px] font-bold uppercase px-3 py-1 rounded-full ${STATUS_COLORS[q.status] || "bg-gray-100 text-gray-600"}`}>
                             {q.status}
                           </span>
@@ -352,7 +444,7 @@ export default function SupplierDashboard() {
                             <p className="text-xs text-red-500 font-semibold mt-1">Winning: ₹{bestPrice.toFixed(2)}/{q.item.unit}</p>
                           )}
                           {q.status === "PENDING" && isLeading && (
-                            <p className="text-xs text-amber-600 font-semibold mt-1">🏆 You're Leading!</p>
+                            <p className="text-xs text-amber-600 font-semibold mt-1">Leading bid</p>
                           )}
                           <p className="text-xs text-slate-400 mt-1">{new Date(q.createdAt).toLocaleDateString()}</p>
                         </div>

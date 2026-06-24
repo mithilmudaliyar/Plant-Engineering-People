@@ -68,8 +68,8 @@ export function Header() {
     ? "text-white/85 hover:text-white"
     : "text-slate-600 hover:text-[#0C1B33]";
   const activeNavColor = isHomePage && !scrolled
-    ? "text-orange-400 border-b-2 border-orange-400"
-    : "text-orange-500 border-b-2 border-orange-500";
+    ? "text-[#f87171] border-b-2 border-[#f87171]"
+    : "text-[#d41f3d] border-b-2 border-[#d41f3d]";
 
   const positionClass = isHomePage ? "fixed w-full" : "sticky top-0";
 
@@ -93,7 +93,7 @@ export function Header() {
           {/* Desktop nav */}
           <nav className="hidden items-center gap-0.5 md:flex flex-1 ml-8">
             {site.navigation.map((item) => {
-              const active = pathname === item.href;
+              const active = item.href.startsWith("/#") ? false : pathname === item.href;
               return (
                 <Link
                   key={item.href}
@@ -111,8 +111,8 @@ export function Header() {
           {/* Right section */}
           <div className="hidden md:flex items-center gap-2">
             <Link
-              href="/contact"
-              className="rounded-xl bg-orange-500 px-5 py-2 text-sm font-bold text-white hover:bg-orange-600 transition-colors whitespace-nowrap"
+              href="/#contact"
+              className="rounded-xl bg-[#d41f3d] px-5 py-2 text-sm font-bold text-white hover:bg-[#b01830] transition-colors whitespace-nowrap"
             >
               Get a Quote
             </Link>
@@ -122,7 +122,7 @@ export function Header() {
                 <Link href="/employee" className="px-4 py-2 text-sm font-semibold text-white bg-[#0C1B33] rounded-xl hover:bg-[#08111f] transition-colors whitespace-nowrap">
                   Staff Portal
                 </Link>
-                <button onClick={handleSignOut} className="px-3 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-colors cursor-pointer">
+                <button onClick={handleSignOut} className="px-3 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-xl hover:border-[#d41f3d] hover:text-[#d41f3d] transition-colors cursor-pointer">
                   Sign Out
                 </button>
               </div>
@@ -131,7 +131,7 @@ export function Header() {
                 <Link href="/supplier" className="px-4 py-2 text-sm font-semibold text-white bg-[#0C1B33] rounded-xl hover:bg-[#08111f] transition-colors whitespace-nowrap">
                   My Portal
                 </Link>
-                <button onClick={handleSignOut} className="px-3 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-colors cursor-pointer">
+                <button onClick={handleSignOut} className="px-3 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-xl hover:border-[#d41f3d] hover:text-[#d41f3d] transition-colors cursor-pointer">
                   Sign Out
                 </button>
               </div>
@@ -174,7 +174,7 @@ export function Header() {
           <nav className="md:hidden border-t border-slate-200 bg-white py-4 space-y-1">
             {site.navigation.map((item) => (
               <Link key={item.href} href={item.href}
-                className={`block px-4 py-2.5 text-sm font-semibold rounded-lg cursor-pointer ${pathname === item.href ? "text-orange-500 bg-orange-50" : "text-slate-700 hover:bg-slate-50 hover:text-[#0C1B33]"}`}
+                className={`block px-4 py-2.5 text-sm font-semibold rounded-lg cursor-pointer ${pathname === item.href ? "text-[#d41f3d] bg-red-50" : "text-slate-700 hover:bg-slate-50 hover:text-[#0C1B33]"}`}
                 onClick={() => setMobileOpen(false)}>
                 {item.label}
               </Link>
@@ -183,12 +183,12 @@ export function Header() {
               {employee ? (
                 <>
                   <Link href="/employee" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-xl bg-[#0C1B33] px-4 py-2.5 text-sm font-bold text-white cursor-pointer">Staff Portal</Link>
-                  <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50 rounded-lg cursor-pointer">Sign Out</button>
+                  <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm font-semibold text-[#d41f3d] hover:bg-red-50 rounded-lg cursor-pointer">Sign Out</button>
                 </>
               ) : account ? (
                 <>
                   <Link href="/supplier" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-xl bg-[#0C1B33] px-4 py-2.5 text-sm font-bold text-white cursor-pointer">My Portal</Link>
-                  <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50 rounded-lg cursor-pointer">Sign Out</button>
+                  <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm font-semibold text-[#d41f3d] hover:bg-red-50 rounded-lg cursor-pointer">Sign Out</button>
                 </>
               ) : (
                 <>
@@ -196,7 +196,7 @@ export function Header() {
                   <Link href="/register" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg cursor-pointer">Create account</Link>
                 </>
               )}
-              <Link href="/contact" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-orange-600 transition-colors cursor-pointer">Get a Quote</Link>
+              <Link href="/#contact" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-xl bg-[#d41f3d] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#b01830] transition-colors cursor-pointer">Get a Quote</Link>
             </div>
           </nav>
         )}

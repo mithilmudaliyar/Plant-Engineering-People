@@ -5,9 +5,9 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function MapSection() {
   return (
-    <section className="bg-slate-900 py-20 relative overflow-hidden">
+    <section className="bg-slate-900 py-24 relative overflow-hidden">
       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-orange-500/8 to-transparent pointer-events-none" />
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#d41f3d]/8 to-transparent pointer-events-none" />
 
       <Container className="relative">
         <div className="grid gap-12 lg:grid-cols-[1fr_2fr] items-center">
@@ -15,12 +15,12 @@ export function MapSection() {
           <ScrollReveal direction="left">
           <div>
             <div className="inline-flex items-center gap-2 mb-6">
-              <span className="h-px w-6 bg-orange-500" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-orange-500">Global Standards</span>
+              <span className="h-px w-6 bg-[#d41f3d]" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#d41f3d]">Global Standards</span>
             </div>
             <h2 className="text-3xl font-black text-white sm:text-4xl leading-tight">
               Strategically Located in{" "}
-              <span className="text-orange-400">Tarapur MIDC</span>
+              <span className="text-[#f87171]">Tarapur MIDC</span>
             </h2>
             <p className="mt-6 text-base text-slate-400 leading-relaxed">
               Our 5,000+ MT capacity fabrication facility is situated in the heart of Maharashtra&apos;s premier industrial zone — enabling efficient service to major nuclear and chemical installations across India.
@@ -28,14 +28,14 @@ export function MapSection() {
 
             <div className="mt-8 space-y-4">
               <div className="flex items-start gap-3">
-                <div className="mt-1 h-2 w-2 rounded-full bg-orange-500 shrink-0" />
+                <div className="mt-1 h-2 w-2 rounded-full bg-[#d41f3d] shrink-0" />
                 <div>
                   <p className="text-sm font-bold text-white">Fabrication Facility</p>
                   <p className="text-xs text-slate-400 mt-1">Plot No: G-52, Tarapur Industrial Area, Boisar</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="mt-1 h-2 w-2 rounded-full bg-orange-400 shrink-0" />
+                <div className="mt-1 h-2 w-2 rounded-full bg-[#d41f3d]/60 shrink-0" />
                 <div>
                   <p className="text-sm font-bold text-white">Proximity Advantage</p>
                   <p className="text-xs text-slate-400 mt-1">Direct access to Tarapur Atomic Power Station (TAPS)</p>

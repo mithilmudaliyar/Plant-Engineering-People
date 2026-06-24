@@ -39,7 +39,7 @@ export function ContactCTA() {
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/contact"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-8 py-4 text-sm font-bold text-white transition-all hover:bg-orange-600 hover:scale-105 shadow-lg shadow-orange-500/20 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#d41f3d] px-8 py-4 text-sm font-bold text-white transition-all hover:bg-[#b01830] hover:scale-105 shadow-lg shadow-[#d41f3d]/20 cursor-pointer"
               >
                 Request a Technical Quote
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

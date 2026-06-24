@@ -18,7 +18,7 @@ const slides = [
     tag: "Fabrication & Erection",
     location: "Tarapur Industrial Area",
     title: "5000+ MT Steel\nFabricated with Precision",
-    subtitle: "Stainless steel, carbon steel, and ductile iron systems â€” fabricated and erected across critical sectors.",
+    subtitle: “Stainless steel, carbon steel, and ductile iron systems — fabricated and erected across critical sectors.”,
   },
   {
     id: 3,
@@ -67,8 +67,8 @@ export function HeroCarousel() {
           alt={slide.title}
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/25" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
       </div>
 
       {/* Content */}
@@ -94,14 +94,14 @@ export function HeroCarousel() {
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-7 py-3.5 text-sm font-bold text-white transition-all hover:bg-orange-600 hover:scale-105"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#d41f3d] px-8 py-4 text-sm font-bold text-white transition-all hover:bg-[#b01830] hover:scale-105 shadow-lg shadow-black/30"
           >
             Our Capabilities
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
           </Link>
           <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm px-7 py-3.5 text-sm font-bold text-white transition-all hover:bg-white/20"
+            href="/#contact"
+            className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/8 backdrop-blur-sm px-6 py-3.5 text-sm font-medium text-white/85 transition-all hover:bg-white/15"
           >
             Get a Quote
           </Link>
@@ -115,7 +115,7 @@ export function HeroCarousel() {
                 key={i}
                 onClick={() => goTo(i)}
                 aria-label={`Go to slide ${i + 1}`}
-                className={`cursor-pointer rounded-full transition-all duration-300 ${i === current ? "w-8 h-2.5 bg-orange-500" : "w-2.5 h-2.5 bg-white/40 hover:bg-white/70"}`}
+                className={`cursor-pointer rounded-full transition-all duration-300 ${i === current ? "w-8 h-2.5 bg-[#d41f3d]" : "w-2.5 h-2.5 bg-white/40 hover:bg-white/70"}`}
               />
             ))}
           </div>
@@ -150,7 +150,7 @@ export function HeroCarousel() {
       <div className="absolute bottom-0 left-0 right-0 z-10 flex items-center gap-6 border-t border-white/10 bg-black/30 backdrop-blur-sm px-6 sm:px-12 lg:px-20 py-3">
         <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/50">Plant Engineering People Pvt. Ltd.</span>
         <div className="h-px flex-1 bg-white/10" />
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-400/80">DAE Approved Vendor Â· Est. 1999</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-400/80">DAE Approved Vendor · Est. 1999</span>
       </div>
     </section>
   );

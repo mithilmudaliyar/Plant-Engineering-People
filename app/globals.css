@@ -23,6 +23,10 @@
 }
 
 /* ===== BASE ===== */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: #f8fafc;
   color: #1f2937;

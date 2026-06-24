@@ -48,11 +48,11 @@ const education = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-slate-50 pt-32 pb-20">
+    <div className="min-h-screen bg-slate-50 pt-32 pb-24">
       <Container>
         <div className="max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 mb-6">
-            <span className="h-px w-6 bg-amber-500" />
+            <span className="h-px w-6 bg-[#d41f3d]" />
             <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#d41f3d]">About Us</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-[#1a3a52] mb-8">Engineering Excellence Since 1999</h1>
@@ -72,7 +72,7 @@ export default function AboutPage() {
           {/* Leadership */}
           <div className="mt-16">
             <div className="inline-flex items-center gap-2 mb-6">
-              <span className="h-px w-6 bg-amber-500" />
+              <span className="h-px w-6 bg-[#d41f3d]" />
               <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#d41f3d]">Leadership</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-black text-[#1a3a52] mb-8">Meet Our Managing Director</h2>
