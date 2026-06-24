@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const nav = [
+  { href: "/employee", label: "Dashboard", exact: true },
   { href: "/employee/inquiries", label: "Inquiries" },
   { href: "/employee/news", label: "News" },
   { href: "/employee/jobs", label: "Jobs" },
@@ -35,7 +36,7 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
                   key={item.href}
                   href={item.href}
                   className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
-                    pathname.startsWith(item.href)
+                    (item.exact ? pathname === item.href : pathname.startsWith(item.href))
                       ? "text-[#d41f3d] bg-red-50"
                       : "text-slate-600 hover:text-[#0C1B33] hover:bg-slate-50"
                   }`}
