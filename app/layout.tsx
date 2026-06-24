@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EB_Garamond, Lato } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { ScrollProgressBar } from "@/components/ui/ScrollProgressBar";
@@ -40,6 +41,7 @@ export default function RootLayout({
         <Header />
         <main>{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
