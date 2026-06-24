@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { site } from "@/lib/site";
 
 export function Footer() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/employee")) return null;
   const { contact } = site;
   const fullAddress = `${contact.address.line1}, ${contact.address.line2}, ${contact.address.state} ${contact.address.pin}`;
 

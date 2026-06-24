@@ -15,6 +15,8 @@ export function Header() {
   const [account, setAccount] = useState<{ id: number; email: string; name: string } | null>(null);
   const [employee, setEmployee] = useState<{ id: number; email: string; name: string; role: string } | null>(null);
 
+  if (pathname.startsWith("/employee")) return null;
+
   const isHomePage = pathname === "/";
 
   const anchorPageMap: Record<string, string> = {

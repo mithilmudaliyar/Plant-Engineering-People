@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 
 type Job = {
@@ -21,6 +20,9 @@ const empty = {
   id: 0, title: "", department: "", location: "Tarapur, Maharashtra", employmentType: "Full-time",
   experience: "", description: "", responsibilities: "", requirements: "", status: "OPEN",
 };
+
+const field = "block w-full rounded-lg border border-gray-200 p-2.5 text-sm focus:border-[#d41f3d] focus:ring-1 focus:ring-[#d41f3d] outline-none";
+const lbl = "block text-[11px] font-bold uppercase tracking-wide text-slate-600 mb-1.5";
 
 export default function EmployeeJobsManager() {
   const router = useRouter();
@@ -91,69 +93,83 @@ export default function EmployeeJobsManager() {
     setApps(data.applications || []);
   };
 
-  const field = "block w-full rounded-md border border-gray-300 p-2.5 text-sm focus:border-[#d41f3d] focus:ring-[#d41f3d]";
-  const lbl = "block text-[11px] font-bold uppercase tracking-wide text-slate-700 mb-1.5";
-
   return (
-    <div className="min-h-screen bg-slate-50 pt-28 pb-20">
+    <div className="py-10">
       <Container>
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-2xl font-black text-[#1a3a52]">Job Openings</h1>
-              <p className="text-sm text-slate-500 mt-1">Post roles and review candidate applications.</p>
-            </div>
-            <Link href="/employee" className="text-sm font-semibold text-slate-500 hover:text-[#d41f3d]">← Back to portal</Link>
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-2xl font-black text-[#0C1B33] mb-1">Job Openings</h1>
+          <p className="text-sm text-slate-500 mb-8">Post roles and review candidate applications.</p>
+
+          {msg && (
+            <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">{msg}</div>
+          )}
+
+          <div className="surface p-6 mb-8 space-y-4">
+            <h2 className="font-bold text-[#0C1B33]">{editing ? "Edit job" : "New job opening"}</h2>
+            <form onSubmit={submit} className="space-y-4">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div><label className={lbl}>Title</label><input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className={field} /></div>
+                <div><label className={lbl}>Department</label><input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} required className={field} /></div>
+                <div><label className={lbl}>Location</label><input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} required className={field} /></div>
+                <div><label className={lbl}>Experience</label><input value={form.experience} onChange={(e) => setForm({ ...form, experience: e.target.value })} placeholder="e.g. 3-5 years" className={field} /></div>
+                <div>
+                  <label className={lbl}>Employment Type</label>
+                  <select value={form.employmentType} onChange={(e) => setForm({ ...form, employmentType: e.target.value })} className={field}>
+                    {["Full-time", "Part-time", "Contract", "Internship"].map((t) => <option key={t}>{t}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={lbl}>Status</label>
+                  <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={field}>
+                    {["OPEN", "CLOSED"].map((s) => <option key={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div><label className={lbl}>Description</label><textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={3} className={field} /></div>
+              <div><label className={lbl}>Responsibilities (one per line)</label><textarea value={form.responsibilities} onChange={(e) => setForm({ ...form, responsibilities: e.target.value })} rows={3} className={field} /></div>
+              <div><label className={lbl}>Requirements (one per line)</label><textarea value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} rows={3} className={field} /></div>
+              <div className="flex gap-3">
+                <button type="submit" className="rounded-xl bg-[#d41f3d] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#b01830] transition-colors">
+                  {editing ? "Save changes" : "Post job"}
+                </button>
+                {editing && (
+                  <button type="button" onClick={() => { setForm({ ...empty }); setEditing(false); }} className="rounded-xl border border-slate-200 px-6 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
           </div>
 
-          {msg && <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">{msg}</div>}
-
-          <form onSubmit={submit} className="surface p-6 mb-10 space-y-4">
-            <h2 className="font-bold text-[#1a3a52]">{editing ? "Edit job" : "New job opening"}</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div><label className={lbl}>Title</label><input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className={field} /></div>
-              <div><label className={lbl}>Department</label><input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} required className={field} /></div>
-              <div><label className={lbl}>Location</label><input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} required className={field} /></div>
-              <div><label className={lbl}>Experience (e.g. 3–5 years)</label><input value={form.experience} onChange={(e) => setForm({ ...form, experience: e.target.value })} className={field} /></div>
-              <div>
-                <label className={lbl}>Employment Type</label>
-                <select value={form.employmentType} onChange={(e) => setForm({ ...form, employmentType: e.target.value })} className={field}>
-                  {["Full-time", "Part-time", "Contract", "Internship"].map((t) => <option key={t}>{t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={lbl}>Status</label>
-                <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={field}>
-                  {["OPEN", "CLOSED"].map((s) => <option key={s}>{s}</option>)}
-                </select>
-              </div>
-            </div>
-            <div><label className={lbl}>Description</label><textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={3} className={field} /></div>
-            <div><label className={lbl}>Responsibilities (one per line)</label><textarea value={form.responsibilities} onChange={(e) => setForm({ ...form, responsibilities: e.target.value })} rows={3} className={field} /></div>
-            <div><label className={lbl}>Requirements (one per line)</label><textarea value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} rows={3} className={field} /></div>
-            <div className="flex gap-3">
-              <button type="submit" className="rounded-xl bg-[#d41f3d] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#b01830]">{editing ? "Save changes" : "Post job"}</button>
-              {editing && <button type="button" onClick={() => { setForm({ ...empty }); setEditing(false); }} className="rounded-xl border border-slate-300 px-6 py-2.5 text-sm font-bold text-slate-600">Cancel</button>}
-            </div>
-          </form>
-
-          <h2 className="font-bold text-[#1a3a52] mb-4">All jobs ({jobs.length})</h2>
-          {loading ? <p className="text-slate-400">Loading…</p> : (
+          <h2 className="font-bold text-[#0C1B33] mb-4">All jobs ({jobs.length})</h2>
+          {loading ? (
+            <p className="text-sm text-slate-400">Loading...</p>
+          ) : (
             <div className="space-y-3">
               {jobs.map((j) => (
                 <div key={j.id} className="surface p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${j.status === "OPEN" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{j.status}</span>
-                      <span className="text-[10px] text-slate-400 uppercase tracking-wider">{j.department} · {j.location}</span>
+                      <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${j.status === "OPEN" ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-[#0C1B33]"}`}>
+                        {j.status}
+                      </span>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider">{j.department} · {j.location}</span>
                     </div>
-                    <p className="font-bold text-[#1a3a52] truncate mt-1">{j.title}</p>
+                    <p className="font-bold text-[#0C1B33] truncate mt-1">{j.title}</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 shrink-0">
-                    <button onClick={() => viewApps(j)} className="text-xs font-semibold text-[#1a3a52] border border-slate-300 rounded-lg px-3 py-1.5">Applications ({j._count.applications})</button>
-                    <button onClick={() => toggleStatus(j)} className="text-xs font-semibold text-slate-600 border border-slate-300 rounded-lg px-3 py-1.5">{j.status === "OPEN" ? "Close" : "Reopen"}</button>
-                    <button onClick={() => edit(j)} className="text-xs font-semibold text-[#1a3a52] border border-slate-300 rounded-lg px-3 py-1.5">Edit</button>
-                    <button onClick={() => remove(j.id)} className="text-xs font-semibold text-red-600 border border-red-200 rounded-lg px-3 py-1.5">Delete</button>
+                    <button onClick={() => viewApps(j)} className="text-xs font-semibold text-[#0C1B33] border border-slate-200 rounded-lg px-3 py-1.5 hover:bg-slate-50 transition-colors">
+                      Applications ({j._count.applications})
+                    </button>
+                    <button onClick={() => toggleStatus(j)} className="text-xs font-semibold text-slate-600 border border-slate-200 rounded-lg px-3 py-1.5 hover:bg-slate-50 transition-colors">
+                      {j.status === "OPEN" ? "Close" : "Reopen"}
+                    </button>
+                    <button onClick={() => edit(j)} className="text-xs font-semibold text-[#0C1B33] border border-slate-200 rounded-lg px-3 py-1.5 hover:bg-slate-50 transition-colors">
+                      Edit
+                    </button>
+                    <button onClick={() => remove(j.id)} className="text-xs font-semibold text-red-600 border border-red-200 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors">
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}
@@ -162,21 +178,29 @@ export default function EmployeeJobsManager() {
         </div>
       </Container>
 
-      {/* Applications drawer */}
       {viewing && (
         <div className="fixed inset-0 z-50 bg-black/40 flex justify-end" onClick={() => setViewing(null)}>
           <div className="w-full max-w-md bg-white h-full overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-[#1a3a52]">Applications · {viewing.title}</h3>
-              <button onClick={() => setViewing(null)} className="text-slate-400 hover:text-slate-700">✕</button>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Applications</p>
+                <h3 className="font-black text-[#0C1B33]">{viewing.title}</h3>
+              </div>
+              <button onClick={() => setViewing(null)} className="text-slate-400 hover:text-slate-700 text-lg leading-none">✕</button>
             </div>
-            {apps.length === 0 ? <p className="text-sm text-slate-400">No applications yet.</p> : (
+            {apps.length === 0 ? (
+              <p className="text-sm text-slate-400">No applications yet.</p>
+            ) : (
               <div className="space-y-4">
                 {apps.map((a) => (
                   <div key={a.id} className="border border-slate-200 rounded-xl p-4">
-                    <p className="font-bold text-[#1a3a52]">{a.applicant.name}</p>
+                    <p className="font-bold text-[#0C1B33]">{a.applicant.name}</p>
                     <p className="text-xs text-slate-500">{a.applicant.email}{a.applicant.phone ? ` · ${a.applicant.phone}` : ""}</p>
-                    {a.resumeUrl && <a href={a.resumeUrl.startsWith("http") ? a.resumeUrl : `/api/employee/applications/resume?path=${encodeURIComponent(a.resumeUrl)}`} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs font-bold text-[#d41f3d] hover:underline">View resume →</a>}
+                    {a.resumeUrl && (
+                      <a href={a.resumeUrl.startsWith("http") ? a.resumeUrl : `/api/employee/applications/resume?path=${encodeURIComponent(a.resumeUrl)}`} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs font-bold text-[#d41f3d] hover:underline">
+                        View resume →
+                      </a>
+                    )}
                     {a.coverLetter && <p className="mt-2 text-sm text-slate-600 whitespace-pre-line">{a.coverLetter}</p>}
                     <p className="mt-2 text-[10px] text-slate-400">{new Date(a.createdAt).toLocaleString("en-IN")}</p>
                   </div>
