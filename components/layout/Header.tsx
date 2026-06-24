@@ -17,6 +17,13 @@ export function Header() {
 
   const isHomePage = pathname === "/";
 
+  const anchorPageMap: Record<string, string> = {
+    "/#about": "/about",
+    "/#services": "/services",
+    "/#projects": "/projects",
+    "/#contact": "/contact",
+  };
+
   const checkAuth = () => {
     // Unified external account — identity from the secure session cookie.
     fetch("/api/careers/me")
@@ -93,7 +100,9 @@ export function Header() {
           {/* Desktop nav */}
           <nav className="hidden items-center gap-0.5 md:flex flex-1 ml-8">
             {site.navigation.map((item) => {
-              const active = item.href.startsWith("/#") ? false : pathname === item.href;
+              const active = item.href.startsWith("/#")
+                ? pathname === anchorPageMap[item.href]
+                : pathname === item.href;
               return (
                 <Link
                   key={item.href}
@@ -174,7 +183,7 @@ export function Header() {
           <nav className="md:hidden border-t border-slate-200 bg-white py-4 space-y-1">
             {site.navigation.map((item) => (
               <Link key={item.href} href={item.href}
-                className={`block px-4 py-2.5 text-sm font-semibold rounded-lg cursor-pointer ${pathname === item.href ? "text-[#d41f3d] bg-red-50" : "text-slate-700 hover:bg-slate-50 hover:text-[#0C1B33]"}`}
+                className={`block px-4 py-2.5 text-sm font-semibold rounded-lg cursor-pointer ${(item.href.startsWith("/#") ? pathname === anchorPageMap[item.href] : pathname === item.href) ? "text-[#d41f3d] bg-red-50" : "text-slate-700 hover:bg-slate-50 hover:text-[#0C1B33]"}`}
                 onClick={() => setMobileOpen(false)}>
                 {item.label}
               </Link>
