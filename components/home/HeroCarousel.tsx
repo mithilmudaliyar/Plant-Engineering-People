@@ -18,7 +18,7 @@ const slides = [
     tag: "Fabrication & Erection",
     location: "Tarapur Industrial Area",
     title: "5000+ MT Steel\nFabricated with Precision",
-    subtitle: “Stainless steel, carbon steel, and ductile iron systems - fabricated and erected across critical sectors.”,
+    subtitle: "Stainless steel, carbon steel, and ductile iron systems - fabricated and erected across critical sectors.",
   },
   {
     id: 3,
